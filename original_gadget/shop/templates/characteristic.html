@@ -1,0 +1,92 @@
+{% load static %}
+
+<div class="widget brands mb-50">
+    <form method="post" action="{% url 'buy_line'  line=current_line|slugify %}">
+        {% csrf_token %}
+        <!--widget title-->
+        {% for characteristic, values in values_of_characteristics.items %}
+            <h6 class="widget-title mb-30">{{characteristic}}</h6>
+
+            <div class="widget-desc">
+            {% for value in values %}
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="{{characteristic}}"  value="{{ value }}" id="{{value}}">
+                    <label class="form-check-label" for="{{value}}">{{value}}</label>
+                </div>
+            {% endfor %}
+            </div>
+        {% endfor %}
+        <button type="submit">Отправить</button>
+    </form>
+</div>
+
+<!-- ##### Single Widget ##### -->
+<div class="widget brands mb-50">
+    <!-- Widget Title -->
+    <h6 class="widget-title mb-30">Brands</h6>
+
+    <div class="widget-desc">
+        <!-- Single Form Check -->
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="amado">
+            <label class="form-check-label" for="amado">Amado</label>
+        </div>
+        <!-- Single Form Check -->
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="ikea">
+            <label class="form-check-label" for="ikea">Ikea</label>
+        </div>
+        <!-- Single Form Check -->
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="furniture">
+            <label class="form-check-label" for="furniture">Furniture Inc</label>
+        </div>
+        <!-- Single Form Check -->
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="factory">
+            <label class="form-check-label" for="factory">The factory</label>
+        </div>
+        <!-- Single Form Check -->
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" value="" id="artdeco">
+            <label class="form-check-label" for="artdeco">Artdeco</label>
+        </div>
+    </div>
+</div>
+
+<!-- ##### Single Widget ##### -->
+<div class="widget color mb-50">
+    <!-- Widget Title -->
+    <h6 class="widget-title mb-30">Color</h6>
+
+    <div class="widget-desc">
+        <ul class="d-flex">
+            <li><a href="#" class="color1"></a></li>
+            <li><a href="#" class="color2"></a></li>
+            <li><a href="#" class="color3"></a></li>
+            <li><a href="#" class="color4"></a></li>
+            <li><a href="#" class="color5"></a></li>
+            <li><a href="#" class="color6"></a></li>
+            <li><a href="#" class="color7"></a></li>
+            <li><a href="#" class="color8"></a></li>
+        </ul>
+    </div>
+</div>
+
+<!-- ##### Single Widget ##### -->
+<div class="widget price mb-50">
+    <!-- Widget Title -->
+    <h6 class="widget-title mb-30">Price</h6>
+
+    <div class="widget-desc">
+        <div class="slider-range">
+            <div data-min="10" data-max="1000" data-unit="$" class="slider-range-price ui-slider ui-slider-horizontal ui-widget ui-widget-content ui-corner-all" data-value-min="10" data-value-max="1000" data-label-result="">
+                <div class="ui-slider-range ui-widget-header ui-corner-all"></div>
+                <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0"></span>
+                <span class="ui-slider-handle ui-state-default ui-corner-all" tabindex="0"></span>
+            </div>
+            <div class="range-price">$10 - $1000</div>
+        </div>
+    </div>
+</div>
+

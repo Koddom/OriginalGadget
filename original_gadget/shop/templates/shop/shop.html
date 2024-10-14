@@ -1,0 +1,154 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <!-- Title  -->
+    <title>Amado - Furniture Ecommerce Template | Shop</title>
+
+    <!-- Favicon  -->
+    <link rel="icon" href="{% static 'img/core-img/favicon.ico' %}">
+
+    <!-- Core Style CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'shop/css/core-style.css' %}">
+
+</head>
+
+<body>
+    <!-- Search Wrapper Area Start -->
+    <div class="search-wrapper section-padding-100">
+        <div class="search-close">
+            <i class="fa fa-close" aria-hidden="true"></i>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="search-content">
+                        <form action="#" method="get">
+                            <input type="search" name="search" id="search" placeholder="Type your keyword...">
+                            <button type="submit"><img src="{% static 'img/core-img/search.png' %}" alt=""></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Search Wrapper Area End -->
+
+    <!-- ##### Main Content Wrapper Start ##### -->
+    <div class="main-content-wrapper d-flex clearfix">
+
+        <!-- Mobile Nav (max width 767px)-->
+        <div class="mobile-nav">
+            <!-- Navbar Brand -->
+            <div class="amado-navbar-brand">
+                <a href="index.html"><img src="{% static 'img/core-img/logo.png' %}" alt=""></a>
+            </div>
+            <!-- Navbar Toggler -->
+            <div class="amado-navbar-toggler">
+                <span></span><span></span><span></span>
+            </div>
+        </div>
+
+        {% include 'header.html' %}
+
+        <div class="shop_sidebar_area">
+
+            <!-- ##### Single Widget ##### -->
+            <div class="widget catagory mb-50">
+                <!-- Widget Title -->
+                <h6 class="widget-title mb-30">{{ current_category }}</h6>
+
+                <!--  Lines of product  -->
+                <div class="catagories-menu">
+                    <ul>
+                        {% for line in lines %}
+                            <li class="{% if line == current_line %}active{% endif %}"><a href="{% url 'buy_line' line=line|slugify %}">{{ line }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!--Characteristics-->
+
+        <!--   Right column showcase with goods   -->
+        <div class="amado_product_area section-padding-100">
+            <div class="container-fluid">
+
+                <!--Showing and sorting-->
+
+                <div class="row">
+
+                    {% for product in list_of_products %}
+                        <!-- Single Product Area -->
+                        <div class="col-12 col-sm-6 col-md-12 col-xl-6">
+                            <div class="single-product-wrapper">
+                                <!-- Product Image -->
+                                <a href="{% url 'product_details' category=current_category product=product.slug %}">
+                                    <div class="product-img">
+                                    {% if product.images.0 and product.images.1 %}
+                                        {% with path_to_img='img/product-img/'|add:product.category|add:'/'|add:product.line|add:'/' %}
+                                            <img src="{% static path_to_img|add:product.images.1 %}" alt="">
+                                            <!-- Hover Thumb -->
+                                            <img class="hover-img" src="{% static path_to_img|add:product.images.0 %}" alt="">
+                                        {% endwith %}
+                                    {% else %}
+                                        <img src="{% static 'img/product-img/no_image_1.jpg' %}" alt="">
+                                        <!-- Hover Thumb -->
+                                        <img class="hover-img" src="{% static 'img/product-img/no_image_2.jpg' %}" alt="">
+                                    {% endif %}
+                                    </div>
+                                </a>
+
+                                <!-- Product Description -->
+                                <div class="product-description d-flex align-items-center justify-content-between">
+                                    <!-- Product Meta Data -->
+                                    <div class="product-meta-data">
+                                        <div class="line"></div>
+                                        <p class="product-price">₽{{ product.price }}</p>
+                                        <a href="{% url 'product_details' category=current_category product=product.slug %}">
+                                            <h6>{{ product.title }}</h6>
+                                        </a>
+                                    </div>
+                                    <!-- Ratings & Cart -->
+                                    <div class="ratings-cart text-right">
+                                        <div class="cart">
+                                            <a href="cart.html" data-toggle="tooltip" data-placement="left" title="Add to Cart"><img src="{% static 'img/core-img/cart.png' %}" alt=""></a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    {% endfor %}
+
+
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Pagination -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--   end Right column showcase with goods   -->
+    </div>
+    <!-- ##### Main Content Wrapper End ##### -->
+
+
+    {% include 'newsletter.html' %}
+
+    {% include 'footer.html' %}
+
+</body>
+
+</html>
