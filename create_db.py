@@ -24,22 +24,30 @@ def create_schema(cursor):
     query = '''
     CREATE FUNCTION `create-slug`(input VARCHAR(255)) RETURNS VARCHAR(255) CHARSET utf8mb4
     BEGIN
-      DECLARE output VARCHAR(255) DEFAULT '';
-      DECLARE i INT DEFAULT 1;
-      DECLARE c CHAR(1);
-    
-      WHILE i <= CHAR_LENGTH(input) DO
-        SET c = SUBSTRING(input, i, 1);
-        IF c REGEXP '[a-zA-Z0-9]' THEN
-            SET output = CONCAT(output, c);
-        ELSEIF c = ' ' THEN
-            SET output = CONCAT(output, '-');
-        END IF;
-        SET i = i + 1;
-      END WHILE;
-    
-      RETURN TRIM(BOTH '-' FROM output);
-    END;
+        DECLARE output VARCHAR(255) DEFAULT '';
+        DECLARE i INT DEFAULT 1;
+        DECLARE c CHAR(1);
+        DECLARE prev_char CHAR(1) DEFAULT '';  -- переменная для хранения предыдущего символа
+        
+        WHILE i <= CHAR_LENGTH(input) DO
+            SET c = SUBSTRING(input, i, 1);
+            
+            -- Добавляем символ, если это буква или цифра
+            IF c REGEXP '[a-zA-Z0-9]' THEN
+                SET output = CONCAT(output, c);
+                SET prev_char = c;  -- Обновляем предыдущий символ
+            -- Если это пробел, добавляем дефис, только если предыдущий символ не дефис
+            ELSEIF c = ' ' AND prev_char != '-' THEN
+                SET output = CONCAT(output, '-');
+                SET prev_char = '-';  -- Обновляем предыдущий символ как дефис
+            END IF;
+            
+            SET i = i + 1;
+        END WHILE;
+        
+        -- Удаляем дефисы в начале и конце строки
+        RETURN TRIM(BOTH '-' FROM output);
+    END
     '''
     cursor.execute(query)
 

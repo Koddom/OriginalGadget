@@ -3,6 +3,7 @@ import json
 import csv
 import re
 import sys
+import query_to_db
 
 '''
 {
@@ -291,6 +292,10 @@ def parsing_list_of_product_as_iphone(list_of_products):
         print('description', description, sep=': ')
 
         print('-------------', end='\n\n')
+        full_name = 'Смартфон Apple ' + title
+        sku_ya_shop = ('OG', sku)
+        colors = (color, color_ru, color_filter)
+        query_to_db.add_iphone(title, full_name, line, memory, sim, colors, screen_diagonal, description, sku_ya_shop)
 
 
 def get_goods_iphones():

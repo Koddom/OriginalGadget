@@ -11,7 +11,7 @@ class CursorDB:
                 **connection_config_to_db
             )
             self.cursor = self.connection.cursor()
-            self.cursor.execute('USE shelest_mobile')
+            self.cursor.execute('USE original_gadget')
             # print("Connection to MySQL DB successful")
         except Error as e:
             if e.errno == 2061:
@@ -265,7 +265,7 @@ def get_products_in_line(line):
         FROM `product_in_line`
         WHERE `line` = %s;
     '''
-    data = (line, )
+    data = (line,)
     try:
         cur.cursor.execute(query, data)
     except Error as e:
@@ -380,10 +380,10 @@ def get_info_product(slug=None, product_id=None):
         WHERE 
         slug = %s;
     '''
-    data = (slug, )
+    data = (slug,)
     if product_id:
         query.replace('slug', 'id')
-        data = (product_id, )
+        data = (product_id,)
 
     try:
         cur.cursor.execute(query, data)
@@ -656,6 +656,63 @@ def get_category_and_lines_by_line(line):
     return category, lines
 
 
+# Функции добавления объектов в БД
+def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, description, sku_ya_shop: tuple = None):
+    """
+    Добавляет записи в таблицы product,
+    :param title:
+    :param full_name:
+    :param line:
+    :param memory:
+    :param sim:
+    :param colors:
+    :param diagonal:
+    :param description:
+    :param sku_ya_shop:
+    :return:
+    """
+    cur = CursorDB()
+
+    # Добавляем продукт в product
+    query = 'INSERT INTO product (title, full_name) VALUES (%s, %s);'
+    data = (title, full_name)
+    try:
+        cur.cursor.execute(query, data)
+        product_id = cur.cursor.lastrowid
+    except Error as e:
+        print(e)
+        if e.errno == 1062:  # дубликат уникального значения (в основном title)
+            query = 'SELECT id FROM product WHERE title = %s'
+            data = (title,)
+            cur.cursor.execute(query, data)
+            product_id = cur.cursor.fetchone()[0]
+            print(f'В таблице product уже существует запись с title: {title}\n id = {product_id}')
+            # answer = input('Обновить информацию о этой записи? Нажмите Enter для обновления'
+            #                ' или введите любой символ для отмены. ')
+            answer = ''
+            update_this_entry = False if answer else True
+            if not update_this_entry:
+                return
+
+    # Добавляем продукт в product_in_line
+    query = 'INSERT IGNORE INTO product_in_line (line, product_id) VALUES (%s, %s)'
+    data = (line, product_id)
+    try:
+        cur.cursor.execute(query, data)
+    except Error as e:
+        print(e)
+
+    # Добавляем описание продукта
+    query = 'INSERT IGNORE INTO description_of_product (product_id, description) VALUES (%s, %s)'
+    data = (product_id, description)
+    try:
+        cur.cursor.execute(query, data)
+    except Error as e:
+        print(e)
+
+    print()
+
+
 def example():
     cur = CursorDB()
     query = '''
@@ -670,9 +727,26 @@ def example():
     price = cur.cursor.fetchone()
 
 
+def main():
+    title = 'iPhone 13, 128 Gb, nanoSIM + eSIM, Starlight | Сияющая Звезда'
+    sku = '101446177751'
+    line = 'iPhone 13'
+    memory = '128 Gb'
+    sim = 'nanoSIM + eSIM'
+    colors = ('Starlight', 'Сияющая Звезда', 'white')
+    price = 70055
+    diagonal = '6.1'
+    description = '''Представляем вашему вниманию смартфон Apple iPhone 13, сияющая звезда в мире мобильных технологий. Этот смартфон оснащен новейшими технологиями и функциями, которые делают его незаменимым помощником в повседневной жизни.<br/><br/>Одной из ключевых особенностей iPhone 13 является его система двух камер.<br/><br/>Дисплей Super Retina XDR стал на 28% ярче, что позволяет видеть мельчайшие оттенки черного и белого, а также различать все цвета. При этом дисплей расходует заряд аккумулятора еще более экономно, чем прежде.<br/><br/>Процессор A15 Bionic обеспечивает работу Face ID, невероятно надежной технологии аутентификации, а также режима "Киноэффект", фотографических стилей и других функций. Secure Enclave защищает персональные данные, включая Face ID и контакты.<br/><br/>Смартфон оснащен двумя SIM-картами: nano SIM и eSIM. Это позволяет использовать две SIM-карты одновременно, что особенно удобно для тех, кто часто путешествует и хочет оставаться на связи с друзьями и семьей в разных странах.<br/><br/>iPhone 13 поддерживает беспроводную зарядку, что делает его еще более удобным в использовании.<br/><br/>В целом, iPhone 13 - это мощный и надежный смартфон, который станет незаменимым помощником в повседневной жизни.
+    '''
+    full_name = 'Смартфон Apple ' + title
+    sku_ya_shop = ('OG', sku)
+    add_iphone(title, full_name, line, memory, sim, colors, diagonal, description, sku_ya_shop)
+
+
 if __name__ == '__main__':
-    cur = CursorDB()
-    print(get_info_product('iphone-se-2022-128-gb-midnight'))
+    main()
+    # cur = CursorDB()
+    # print(get_info_product('iphone-se-2022-128-gb-midnight'))
     # print(get_lines_and_products_in_category('iphone'))
     # print(get_products_in_line('iphone se 2022'))
     # print(get_category_and_lines_by_line('iphone se 2022'))
