@@ -617,14 +617,14 @@ def get_actual_price_of_product(product_id) -> int:
     :return:
     """
     cur = CursorDB()
-    # Ошибка в запросе. Он выбирает максимальную стоимость, а должен актуальную
-    query = '''
-    SELECT 
-        MAX(price)
-    FROM price_of_product
-    WHERE product_id = %s
-    GROUP BY product_id
-    '''
+
+    query = """
+            SELECT price
+            FROM price_of_product
+            WHERE product_id = %s
+            ORDER BY `date` DESC
+            LIMIT 1;
+        """
     data = (product_id,)
     try:
         cur.cursor.execute(query, data)
@@ -633,7 +633,7 @@ def get_actual_price_of_product(product_id) -> int:
 
     price = cur.cursor.fetchone()
 
-    return price[0]
+    return price[0] if price else 0
 
 
 def get_category_and_lines_by_line(line):
@@ -659,7 +659,8 @@ def get_category_and_lines_by_line(line):
 # Функции добавления объектов в БД
 def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, description, sku_ya_shop: tuple = None):
     """
-    Добавляет записи в таблицы product,
+    Добавляет записи в таблицы product, product_in_line, description_of_product, sku_of_product
+    НЕ устанавливает цену
     :param title:
     :param full_name:
     :param line:
@@ -668,51 +669,81 @@ def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, des
     :param colors:
     :param diagonal:
     :param description:
-    :param sku_ya_shop:
-    :return:
+    :param sku_ya_shop: ('shop_prefix', 'sku_ya_market')
+    :return: product_id
     """
     cur = CursorDB()
 
-    # Добавляем продукт в product
-    query = 'INSERT INTO product (title, full_name) VALUES (%s, %s);'
-    data = (title, full_name)
-    try:
+    # Проверяем есть ли продукт с таким sku
+
+    shop_prefix, sku = sku_ya_shop
+    query = f"SELECT product_id FROM sku_of_product WHERE {shop_prefix.lower()}_sku = '{sku}'"
+    cur.cursor.execute(query)
+    product_id = cur.cursor.fetchone()
+    product_id = product_id[0] if product_id else None
+
+    # либо обновляем информацию, либо создаём новые записи
+    if product_id:
+        print(f'Запись о: {title} : id {product_id} - уже существует в БД. Обновляем информацию')
+        query = f"UPDATE product SET title = %s, full_name = %s WHERE id = %s"
+        data = (title, full_name, product_id)
+        print(query % data)
         cur.cursor.execute(query, data)
-        product_id = cur.cursor.lastrowid
-    except Error as e:
-        print(e)
-        if e.errno == 1062:  # дубликат уникального значения (в основном title)
-            query = 'SELECT id FROM product WHERE title = %s'
-            data = (title,)
+
+        query = 'UPDATE product_in_line SET line = %s WHERE product_id = %s'
+        data = (line, product_id)
+        cur.cursor.execute(query, data)
+
+        query = 'UPDATE description_of_product SET description = %s WHERE product_id = %s'
+        data = (description, product_id)
+        cur.cursor.execute(query, data)
+
+    else:  # Создаём новые записи
+        print(f'Добавляем {title} в базу данных')
+
+        # Добавляем продукт в product
+        query = 'INSERT INTO product (title, full_name) VALUES (%s, %s);'
+        data = (title, full_name)
+        try:
             cur.cursor.execute(query, data)
-            product_id = cur.cursor.fetchone()[0]
-            print(f'В таблице product уже существует запись с title: {title}\n id = {product_id}')
-            # answer = input('Обновить информацию о этой записи? Нажмите Enter для обновления'
-            #                ' или введите любой символ для отмены. ')
-            answer = ''
-            update_this_entry = False if answer else True
-            if not update_this_entry:
-                return
+            product_id = cur.cursor.lastrowid
+        except Error as e:
+            print(e)
+            if e.errno == 1062:  # дубликат уникального значения (title или slug)
+                query = f"SELECT id FROM product WHERE title LIKE '%{title}%'"
 
-    # Добавляем продукт в product_in_line
-    query = 'INSERT INTO product_in_line (line, product_id) VALUES (%s, %s)'
-    data = (line, product_id)
-    try:
-        cur.cursor.execute(query, data)
-    except Error as e:
-        # if e.errno == 1062:
+                cur.cursor.execute(query)
+                product_id = cur.cursor.fetchone()[0]
+                if e.msg.split()[-1] == 'title':  # Если пробелема в дубликате title,
+                    pass
 
-        print(e)
+                print(f'В таблице product уже существует запись с title: {title}\n id = {product_id}')
+                # answer = input('Обновить информацию о этой записи? Нажмите Enter для обновления'
+                #                ' или введите любой символ для отмены. ')
+                answer = ''
+                update_this_entry = False if answer else True
+                if not update_this_entry:
+                    return
 
-    # Добавляем описание продукта
-    query = 'INSERT INTO description_of_product (product_id, description) VALUES (%s, %s)'
-    data = (product_id, description)
-    try:
-        cur.cursor.execute(query, data)
-    except Error as e:
-        print(e)
+        # Добавляем продукт в product_in_line
+        query = 'INSERT INTO product_in_line (line, product_id) VALUES (%s, %s)'
+        data = (line, product_id)
+        try:
+            cur.cursor.execute(query, data)
+        except Error as e:
+            # if e.errno == 1062:
 
-    print()
+            print(e)
+
+        # Добавляем ску продукта продукта
+        query = f"INSERT INTO sku_of_product (product_id, {shop_prefix.lower()}_sku) VALUES ({product_id}, '{sku}')"
+        try:
+            cur.cursor.execute(query)
+        except Error as e:
+            print(e)
+
+        print()
+        return product_id
 
 
 def example():

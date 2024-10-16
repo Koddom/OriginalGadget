@@ -232,7 +232,10 @@ def define_memory(title):
     elif 'Tb' in title:
         memory = title.split()[title.split().index('Tb') - 1] + ' Tb'
 
-    return memory
+    if 'memory' in locals():
+        return memory
+    else:
+        print(title)
 
 
 def define_sim_for_iphone(title):
@@ -315,6 +318,8 @@ def parsing_list_of_product_as_iphone(list_of_products):
     for item in list_of_products:
         sku = item['offer']['offerId']
         title = item['mapping']['marketSkuName']
+        if title == 'Смартфон Apple iPhone 16 256 Gb nanoSIM+esim белый white':
+            print(title)
         title = title.replace('Смартфон Apple ', '')
         price = int(item['offer']['basicPrice']['value'])
 
@@ -322,8 +327,11 @@ def parsing_list_of_product_as_iphone(list_of_products):
 
         line = define_line_for_iphone(title)
         pictures = item['offer']['pictures']
-        color_in_product = title.split(',')[-1]
+        color_in_product = title.split(',')[-1]  # цвет в названии обязательно должен отделяться запятой
         color, color_ru, color_filter = define_color(color_in_product)
+        if not color:
+            print('Не удалось определить цвет')
+            return
         title = title.replace(color_in_product, ' '+color_ru) + ' | ' + color  # заменяем английский цвет на русский
 
         if 'description' in item['offer']:
@@ -333,12 +341,15 @@ def parsing_list_of_product_as_iphone(list_of_products):
             print('!!! Нет описания')
 
         screen_diagonal = define_sceen_diagonal(title)
+        if title == '  | ':
+            print(title)
         memory = define_memory(title)
         sim = define_sim_for_iphone(title)
 
         print(counter, end=' - ')
         counter += 1
         title = ', '.join([line, memory, sim, color]) + ' | ' + color_ru
+        print('-------------------------')
         print('title', title, sep=': ')
         print('sku', sku, sep=': ')
         print('line', line, sep=': ')
@@ -351,8 +362,12 @@ def parsing_list_of_product_as_iphone(list_of_products):
 
         print('-------------', end='\n\n')
         full_name = 'Смартфон Apple ' + title
-        sku_ya_shop = ('OG', sku)
+        sku_ya_shop = ('SM', sku)
         colors = (color, color_ru, color_filter)
+        print('------')
+        if counter < 14:
+            continue
+
         query_to_db.add_iphone(title, full_name, line, memory, sim, colors, screen_diagonal, description, sku_ya_shop)
 
 

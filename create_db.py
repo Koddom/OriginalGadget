@@ -12,6 +12,7 @@ def create_schema(cursor):
                     title CHAR(255) NOT NULL UNIQUE,
                     slug char(255) NOT NULL UNIQUE,
                     full_name char(255),
+                    is_available TINYINT(1) NOT NULL DEFAULT 1,
                     PRIMARY KEY (id)
                 );
     '''
@@ -242,6 +243,20 @@ def create_schema(cursor):
     '''
     cursor.execute(query)
 
+    query = '''
+        CREATE TABLE IF NOT EXISTS sku_of_product(
+            product_id INT UNSIGNED,
+            sm_sku CHAR(255) UNIQUE,
+            og_sku CHAR(255) UNIQUE,
+            pd_sku CHAR(255) UNIQUE,
+            PRIMARY KEY (product_id),
+            FOREIGN KEY (product_id) REFERENCES original_gadget.product(id) ON DELETE CASCADE ON UPDATE CASCADE
+        );
+        '''
+    cursor.execute(query)
+
+
+
 
 def create_basic_data(cursor):
     # Заполняем справочник категорий товаров
@@ -366,7 +381,7 @@ def main():
     cursor.execute('CREATE DATABASE IF NOT EXISTS original_gadget CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;')
     cursor.execute('USE original_gadget')
 
-    # create_schema(cursor)
+    create_schema(cursor)
     create_basic_data(cursor)
     connect.close()
 
