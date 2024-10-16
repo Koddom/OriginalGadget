@@ -695,15 +695,17 @@ def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, des
                 return
 
     # Добавляем продукт в product_in_line
-    query = 'INSERT IGNORE INTO product_in_line (line, product_id) VALUES (%s, %s)'
+    query = 'INSERT INTO product_in_line (line, product_id) VALUES (%s, %s)'
     data = (line, product_id)
     try:
         cur.cursor.execute(query, data)
     except Error as e:
+        # if e.errno == 1062:
+
         print(e)
 
     # Добавляем описание продукта
-    query = 'INSERT IGNORE INTO description_of_product (product_id, description) VALUES (%s, %s)'
+    query = 'INSERT INTO description_of_product (product_id, description) VALUES (%s, %s)'
     data = (product_id, description)
     try:
         cur.cursor.execute(query, data)

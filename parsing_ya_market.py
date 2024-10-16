@@ -6,15 +6,16 @@ import sys
 import query_to_db
 
 '''
-{
-    [
+[
+    {
         "id": 91491,
         "name": "Мобильные телефоны"
-    ],
-    [
-        
-    ]
-}
+    },
+    {
+        "id": 6427100,
+        "Планшеты": "Планшеты"   
+    }
+]
 '''
 TOKEN = 'y0_AgAAAAA13VXGAAvz6QAAAAEHf7cVAAAB69pht3BEXrh32mlfvcdJRy7noQ'
 
@@ -245,6 +246,63 @@ def define_sim_for_iphone(title):
     else:
         input(title)
 
+
+# Форматные функции для ipad
+def create_norm_title_for_ipad(title: str):
+    title = title.replace('Планшет ', '')
+    title = title.replace('Apple ', '')
+
+    index = title.find('"', 0, 10)
+    if index >= 0:
+        title = title[index+1:None].strip()
+
+    title = replace_letter_of_memory(title)
+
+    title = title.replace('iPadOS, ', '')
+
+    return title
+
+
+def define_line_for_ipad(title: str):
+    title = title.lower()
+    if 'pro' in title:
+        line = 'iPad Pro'
+    elif 'air' in title:
+        line = 'iPad Air'
+    elif 'mini' in title:
+        line = 'iPad mini'
+    else:
+        line = 'iPad'
+
+    return line
+
+
+def define_processor(title):
+    if 'ipad' in title.lower():
+        pattern = r'(M\d)'
+        match = re.match(pattern, title)
+        if match:
+            processor = match.group(1)
+            return processor
+
+        year = define_year(title)
+        if ('mini' in title.lower()) and (year == 2021):
+            return 'A15 Bionic'
+        elif ('air' in title.lower()) and (year == 2024):
+            return 'M2'
+        elif ('air' in title.lower()) and (year == 2022):
+            return 'M1'
+        elif ('pro' in title.lower()) and (year == 2024):
+            return 'M4'
+        elif ('pro' in title.lower()) and (year == 2022):
+            return 'M2'
+        elif ('ipad' in title.lower()) and (year == 2022):
+            return 'A14 Bionic'
+        elif ('ipad' in title.lower()) and (year == 2021):
+            return 'A13 Bionic'
+        else:
+            input('Не обнаружен процессор')
+
 # конец Форматные функции
 
 
@@ -298,8 +356,66 @@ def parsing_list_of_product_as_iphone(list_of_products):
         query_to_db.add_iphone(title, full_name, line, memory, sim, colors, screen_diagonal, description, sku_ya_shop)
 
 
-def get_goods_iphones():
+def parsing_list_of_product_as_ipad(list_of_products):
+    products = []
+    counter = 1
+    for item in list_of_products:
+        sku = item['offer']['offerId']
+        title = item['mapping']['marketSkuName']
+
+        title = create_norm_title_for_ipad(title)
+
+        line = item['mapping']['marketModelName']
+        pictures = item['offer']['pictures']
+        color_in_product = title.split(',')[-1].strip()
+        color, color_ru, color_filter = define_color(color_in_product)
+        title = title.replace(color_in_product, color_ru) + ' | ' + color  # заменяем английский цвет на русский
+
+        line = define_line_for_ipad(title)
+
+        price = int(item['offer']['basicPrice']['value'])
+        if 'description' in item['offer']:
+            description = item['offer']['description']
+        else:
+            # print('!!! Нет описания')
+            description = ''
+
+        # special characteristic
+        year = define_year(title)
+        screen_diagonal = define_sceen_diagonal(title)
+        processor = define_processor(title)
+        memory = define_memory(title)
+        has_cellular = 'cellular' in title.lower()
+        cellular = 'Wi-Fi + Cellular' if has_cellular else 'Wi-Fi'
+
+        colors = (color, color_ru, color_filter)
+
+        title = f'{line} {screen_diagonal}", {year}, {processor}, {memory}, {cellular}, {color}'
+        full_name = 'Планшет Apple ' + title + ' | ' + color_ru
+
+        # printing
+        print(counter, end=' - ')
+        counter += 1
+        print('title', title, sep=': ')
+        print('full_name', full_name, sep=': ')
+        print('sku', sku, sep=': ')
+        print('line', line, sep=': ')
+        print('year', year, sep=': ')
+        print('color', color, sep=': ')
+        print('price', price, sep=': ')
+        print('cellular', has_cellular, sep=': ')
+        print('diagonal', screen_diagonal, sep=': ')
+        print('memory', memory, sep=': ')
+
+        print('-------------', end='\n\n')
+
+        query_to_db.add_iphone(title, full_name, line, memory, '', colors, screen_diagonal, description, sku)
+        # input()
+
+
+def get_goods_from_ya(category_id: str):
     """
+    Получает товары айфоны или айпады с Ямаркета и вызывает функцию для заполнения этими товарами БД.
     Сначала получаем самую старую страницу с товарами (потому-что не передан идентификатор страницы)
      и извлекаем из неё next_page_token. Получаем последующие страницы, до тех пор пока есть next_page_token.
     :return:
@@ -310,7 +426,7 @@ def get_goods_iphones():
     # Формируем параметры для получения необходимой выборки
     body = {
         "vendorNames": ["Apple"],
-        "categoryIds": ["91491"],  # Мобильные телефоны
+        "categoryIds": [category_id],  # Мобильные телефоны
     }
 
     params = {
@@ -325,7 +441,11 @@ def get_goods_iphones():
         # Если нет токена следующей страницы, значит достигли конца котолога
         next_page_token = data['result']['paging']['nextPageToken'] if data['result']['paging'] else None
 
-        parsing_list_of_product_as_iphone(list_of_products)  # форматируем список для получения нужных данных
+        # форматируем список для получения нужных данных и записи их в БД
+        if category_id == '91491':  # мобильные телефоны
+            parsing_list_of_product_as_iphone(list_of_products)
+        elif category_id == '6427100':  # планшеты
+            parsing_list_of_product_as_ipad(list_of_products)
 
     else:
         print(f'Ошибка запроса к серверу yandex-market: {response.status_code}')
@@ -344,7 +464,11 @@ def get_goods_iphones():
             list_of_products = data['result']['offerMappings']
             next_page_token = data['result']['paging']['nextPageToken'] if data['result']['paging'] else None
 
-            parsing_list_of_product_as_iphone(list_of_products)
+            # форматируем список для получения нужных данных и записи их в БД
+            if category_id == '91491':  # мобильные телефоны
+                parsing_list_of_product_as_iphone(list_of_products)
+            elif category_id == '6427100':  # планшеты
+                parsing_list_of_product_as_ipad(list_of_products)
 
         else:
             print(f'Ошибка запроса к серверу yandex-market: {response.status_code}')
@@ -357,7 +481,8 @@ def get_goods_iphones():
 
 
 def main():
-    get_goods_iphones()
+    get_goods_from_ya("91491")  # мобильные телефоны
+    # get_goods_from_ya("6427100")  # планшеты
 
 
 if __name__ == '__main__':
