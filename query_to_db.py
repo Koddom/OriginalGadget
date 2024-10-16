@@ -656,6 +656,37 @@ def get_category_and_lines_by_line(line):
     return category, lines
 
 
+# Функции записи в БД
+def update_price(product_id, new_price):
+    cur = CursorDB()
+    query = f'''
+            INSERT INTO price_of_product (product_id, `date`, price)
+            SELECT {product_id}, NOW(), {new_price}
+            FROM dual
+            WHERE NOT EXISTS ( -- проверяем существует ли хотя бы одна запись. 
+                SELECT 1 -- необходимо при первом добавлении записи в таблицу price
+                FROM price_of_product 
+                WHERE product_id = {product_id} 
+                ORDER BY `date` DESC 
+                LIMIT 1
+            ) OR (
+                SELECT price 
+                FROM price_of_product 
+                WHERE product_id = {product_id} 
+                ORDER BY `date` DESC 
+                LIMIT 1
+            ) != {new_price};
+
+    '''
+    data = ()
+    try:
+        cur.cursor.execute(query, data)
+    except Error as e:
+        print(e)
+
+    price = cur.cursor.fetchone()
+
+
 # Функции добавления объектов в БД
 def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, description, sku_ya_shop: tuple = None):
     """
@@ -743,7 +774,8 @@ def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, des
             print(e)
 
         print()
-        return product_id
+
+    return product_id
 
 
 def example():
@@ -761,19 +793,7 @@ def example():
 
 
 def main():
-    title = 'iPhone 13, 128 Gb, nanoSIM + eSIM, Starlight | Сияющая Звезда'
-    sku = '101446177751'
-    line = 'iPhone 13'
-    memory = '128 Gb'
-    sim = 'nanoSIM + eSIM'
-    colors = ('Starlight', 'Сияющая Звезда', 'white')
-    price = 70055
-    diagonal = '6.1'
-    description = '''Представляем вашему вниманию смартфон Apple iPhone 13, сияющая звезда в мире мобильных технологий. Этот смартфон оснащен новейшими технологиями и функциями, которые делают его незаменимым помощником в повседневной жизни.<br/><br/>Одной из ключевых особенностей iPhone 13 является его система двух камер.<br/><br/>Дисплей Super Retina XDR стал на 28% ярче, что позволяет видеть мельчайшие оттенки черного и белого, а также различать все цвета. При этом дисплей расходует заряд аккумулятора еще более экономно, чем прежде.<br/><br/>Процессор A15 Bionic обеспечивает работу Face ID, невероятно надежной технологии аутентификации, а также режима "Киноэффект", фотографических стилей и других функций. Secure Enclave защищает персональные данные, включая Face ID и контакты.<br/><br/>Смартфон оснащен двумя SIM-картами: nano SIM и eSIM. Это позволяет использовать две SIM-карты одновременно, что особенно удобно для тех, кто часто путешествует и хочет оставаться на связи с друзьями и семьей в разных странах.<br/><br/>iPhone 13 поддерживает беспроводную зарядку, что делает его еще более удобным в использовании.<br/><br/>В целом, iPhone 13 - это мощный и надежный смартфон, который станет незаменимым помощником в повседневной жизни.
-    '''
-    full_name = 'Смартфон Apple ' + title
-    sku_ya_shop = ('OG', sku)
-    add_iphone(title, full_name, line, memory, sim, colors, diagonal, description, sku_ya_shop)
+    update_price(4419, 126)
 
 
 if __name__ == '__main__':

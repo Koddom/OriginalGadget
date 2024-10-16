@@ -256,8 +256,6 @@ def create_schema(cursor):
     cursor.execute(query)
 
 
-
-
 def create_basic_data(cursor):
     # Заполняем справочник категорий товаров
     categories = [
