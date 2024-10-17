@@ -211,9 +211,10 @@ def create_schema(cursor):
     query = '''
     CREATE TABLE IF NOT EXISTS price_of_product(
         product_id INT UNSIGNED,
-        `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+        -- отказался от поля иначе получается слишком много соединений при получении стоимости во время запросов
+        -- `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
         price INT(10) UNSIGNED NOT NULL,
-        PRIMARY KEY (product_id, `date`),
+        PRIMARY KEY (product_id),
         FOREIGN KEY (product_id) REFERENCES original_gadget.product(id) ON DELETE CASCADE ON UPDATE CASCADE		
     )
     '''

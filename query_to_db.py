@@ -72,22 +72,21 @@ def get_lines_and_products_in_category(category):
     data = (category,)
     cur.cursor.execute(query, data)
 
-    # Затем формируем таблицу актуальных цен
-    # !!! необходимо оптимизировать объём выборки по необходимым позициям
-    query = '''
-        CREATE TEMPORARY TABLE actual_price
-        AS
-        SELECT p.product_id, p.price
-        FROM price_of_product p
-        INNER JOIN (
-            SELECT product_id, MAX(`date`) AS max_date
-            FROM price_of_product
-            GROUP BY product_id
-        ) latest_price
-        ON p.product_id = latest_price.product_id
-        AND p.`date` = latest_price.max_date;
-    '''
-    cur.cursor.execute(query)
+    # # Затем формируем таблицу актуальных цен
+    # query = '''
+    #     CREATE TEMPORARY TABLE actual_price
+    #     AS
+    #     SELECT p.product_id, p.price
+    #     FROM price_of_product p
+    #     INNER JOIN (
+    #         SELECT product_id, MAX(`date`) AS max_date
+    #         FROM price_of_product
+    #         GROUP BY product_id
+    #     ) latest_price
+    #     ON p.product_id = latest_price.product_id
+    #     AND p.`date` = latest_price.max_date;
+    # '''
+    # cur.cursor.execute(query)
 
     # Временная таблица с картинками
     query = '''
@@ -95,7 +94,7 @@ def get_lines_and_products_in_category(category):
             SELECT
                 product_id,
                 GROUP_CONCAT(name_of_img ORDER BY number_of_image ASC SEPARATOR ';') AS images
-            FROM image_of_product
+            FROM img_of_product
             WHERE product_id IN (SELECT product_id FROM product_in_category)
             GROUP BY product_id;
         '''
@@ -107,17 +106,17 @@ def get_lines_and_products_in_category(category):
     # только теперь получаем необходимые данные соеденив все таблицы
     query = '''
     SELECT
-        id, 
-        line,
-        title,
-        slug,
-        COALESCE(actual_price.price, 0) as price,
+        product.id, 
+        product_in_category.line,
+        product.title,
+        product.slug,
+        COALESCE(price_of_product.price, 0) as price,
         image.images
     FROM product_in_category
     LEFT JOIN product
     ON `product_in_category`.product_id = `product`.id
-    LEFT JOIN `actual_price`
-    ON `product_in_category`.product_id = `actual_price`.product_id
+    LEFT JOIN `price_of_product`
+    ON `product_in_category`.product_id = `price_of_product`.product_id
     LEFT JOIN `image`
     ON `product_in_category`.product_id = `image`.product_id
     ORDER BY line DESC;
@@ -175,6 +174,7 @@ def get_lines_in_category(category):
         SELECT line
         FROM product_line
         WHERE category = %s
+        ORDER BY line_position DESC
         '''
     data = (category,)
     try:
@@ -272,34 +272,34 @@ def get_products_in_line(line):
         print(e)
 
     # 2 - таблица "стоимость товара в линейке" содержит стоимость на все даты
-    query = '''
-        CREATE TEMPORARY TABLE `price_of_product_in_line`
-        SELECT 
-            product_in_one_line.product_id,
-            `date`,
-            price
-        FROM product_in_one_line
-        JOIN `price_of_product`
-        ON product_in_one_line.product_id = `price_of_product`.`product_id`;
-    '''
-    try:
-        cur.cursor.execute(query)
-    except Error as e:
-        print(e)
+    # query = '''
+    #     CREATE TEMPORARY TABLE `price_of_product_in_line`
+    #     SELECT
+    #         product_in_one_line.product_id,
+    #         `date`,
+    #         price
+    #     FROM product_in_one_line
+    #     JOIN `price_of_product`
+    #     ON product_in_one_line.product_id = `price_of_product`.`product_id`;
+    # '''
+    # try:
+    #     cur.cursor.execute(query)
+    # except Error as e:
+    #     print(e)
 
     # 3 - таблица "актуальная дата для стоимости товара в линейке"
-    query = '''
-        CREATE TEMPORARY TABLE `actual_date_for_price_of_product_in_line`
-        SELECT 
-            product_id,
-            MAX(`date`) AS `date`
-        FROM `price_of_product_in_line`
-        GROUP BY product_id;
-    '''
-    try:
-        cur.cursor.execute(query)
-    except Error as e:
-        print(e)
+    # query = '''
+    #     CREATE TEMPORARY TABLE `actual_date_for_price_of_product_in_line`
+    #     SELECT
+    #         product_id,
+    #         MAX(`date`) AS `date`
+    #     FROM `price_of_product_in_line`
+    #     GROUP BY product_id;
+    # '''
+    # try:
+    #     cur.cursor.execute(query)
+    # except Error as e:
+    #     print(e)
 
     # 4 - формируем таблицу с картинками
     query = '''
@@ -307,7 +307,7 @@ def get_products_in_line(line):
         SELECT
             product_id,
             GROUP_CONCAT(name_of_img ORDER BY number_of_image ASC SEPARATOR ';') AS names_of_images
-        FROM image_of_product
+        FROM img_of_product
         WHERE product_id IN (SELECT product_id FROM product_in_one_line)
         GROUP BY product_id;    
     '''
@@ -319,19 +319,19 @@ def get_products_in_line(line):
     # 5 - финальная выборка
     query = '''
         SELECT 
-            `price_of_product`.`product_id`,
-            `product`.`title`,
-            `product`.`slug`,
-            `price_of_product`.`price`,
+            product_in_one_line.product_id,
+            product.`title`,
+            product.slug,
+            price_of_product.price,
             names_of_images.names_of_images,
             (SELECT `category` FROM `product_line` WHERE `line` = %s) AS `category`
-        FROM `actual_date_for_price_of_product_in_line`
+        FROM `product_in_one_line`
+        LEFT JOIN product
+        ON product_in_one_line.product_id = product.id
         LEFT JOIN `price_of_product`
-        ON `actual_date_for_price_of_product_in_line`.date = `price_of_product`.`date`
-        LEFT JOIN `product`
-        ON `actual_date_for_price_of_product_in_line`.product_id = `product`.id
-        LEFT JOIN `names_of_images`
-        ON `actual_date_for_price_of_product_in_line`.`product_id` = `names_of_images`.product_id
+        ON product_in_one_line.product_id = price_of_product.product_id
+        LEFT JOIN names_of_images
+        ON product_in_one_line.product_id = names_of_images.product_id
         ;
     '''
     data = (line,)
@@ -349,7 +349,7 @@ def get_products_in_line(line):
             'title': product_info[1],
             'slug': product_info[2],
             'price': product_info[3],
-            'images': [img_name.strip() for img_name in product_info[4].split(';')],
+            'images': [img_name.strip() for img_name in str(product_info[4]).split(';')],
             'category': product_info[5],
             'line': line,
         }
@@ -360,6 +360,7 @@ def get_products_in_line(line):
 
 def get_info_product(slug=None, product_id=None):
     """
+    :param product_id:
     :param slug:
     :return: {
         'id': product_info[0],
@@ -427,7 +428,7 @@ def get_info_product(slug=None, product_id=None):
         SELECT
             product_id,
             GROUP_CONCAT(name_of_img ORDER BY number_of_image ASC SEPARATOR ';') AS images
-        FROM image_of_product
+        FROM img_of_product
         WHERE product_id IN (SELECT id FROM cart_product)
         GROUP BY product_id;
     '''
@@ -622,8 +623,6 @@ def get_actual_price_of_product(product_id) -> int:
             SELECT price
             FROM price_of_product
             WHERE product_id = %s
-            ORDER BY `date` DESC
-            LIMIT 1;
         """
     data = (product_id,)
     try:
@@ -641,7 +640,8 @@ def get_category_and_lines_by_line(line):
     query = '''
             SELECT `line`, `category`
             FROM `product_line`
-            WHERE `category` = (SELECT `category` FROM `product_line` WHERE `line` = %s);
+            WHERE `category` = (SELECT `category` FROM `product_line` WHERE `line` = %s)
+            ORDER BY line_position DESC
             '''
     data = (line,)
     try:
@@ -659,6 +659,7 @@ def get_category_and_lines_by_line(line):
 # Функции записи в БД
 def update_price(product_id, new_price):
     cur = CursorDB()
+    """
     query = f'''
             INSERT INTO price_of_product (product_id, `date`, price)
             SELECT {product_id}, NOW(), {new_price}
@@ -676,15 +677,18 @@ def update_price(product_id, new_price):
                 ORDER BY `date` DESC 
                 LIMIT 1
             ) != {new_price};
-
     '''
-    data = ()
+    """
+    query = '''
+        INSERT INTO price_of_product (%product_id, %price)
+        VALUES (%s, %s)
+        ON DUPLICATE KEY UPDATE price = VALUES(price);
+    '''
+    data = (product_id, new_price)
     try:
         cur.cursor.execute(query, data)
     except Error as e:
         print(e)
-
-    price = cur.cursor.fetchone()
 
 
 # Функции добавления объектов в БД
@@ -793,7 +797,10 @@ def example():
 
 
 def main():
-    update_price(4419, 126)
+    # update_price(4419, 126)
+    get_products_in_line('iPhone 14')
+    # get_category_and_lines_by_line('iPhone 16 Pro')
+    # get_lines_and_products_in_category('iPhone')
 
 
 if __name__ == '__main__':
