@@ -106,5 +106,9 @@ def product_details(request, category, product):
 
 def cart(request):
     cart = Cart(request)
-    context = {'cart': cart}
+    total_price_of_cart = cart.get_total_price()
+    context = {
+        'cart': cart,
+        'total_price_of_cart': total_price_of_cart
+    }
     return render(request, 'shop/cart.html', context=context)

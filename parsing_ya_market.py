@@ -367,8 +367,8 @@ def parsing_list_of_product_as_iphone(list_of_products):
         colors = (color, color_ru, color_filter)
         print('------')
 
-        product_id = query_to_db.add_iphone(title, full_name, line, memory, sim, colors, screen_diagonal, description, sku_ya_shop)
-        query_to_db.update_price(product_id, price)
+        # product_id = query_to_db.add_iphone(title, full_name, line, memory, sim, colors, screen_diagonal, description, sku_ya_shop)
+        # query_to_db.update_price(product_id, price)
 
 
 def parsing_list_of_product_as_ipad(list_of_products):
@@ -425,7 +425,8 @@ def parsing_list_of_product_as_ipad(list_of_products):
         print('-------------', end='\n\n')
 
         sku_ya_shop = ('SM', sku)
-        query_to_db.add_iphone(title, full_name, line, memory, '', colors, screen_diagonal, description, sku_ya_shop)
+        product_id = query_to_db.add_iphone(title, full_name, line, memory, '', colors, screen_diagonal, description, sku_ya_shop)
+        query_to_db.update_price(product_id, price)
         # input()
 
 
@@ -498,7 +499,7 @@ def get_goods_from_ya(category_id: str):
 
 def main():
     get_goods_from_ya("91491")  # мобильные телефоны
-    get_goods_from_ya("6427100")  # планшеты
+    # get_goods_from_ya("6427100")  # планшеты
 
 
 if __name__ == '__main__':

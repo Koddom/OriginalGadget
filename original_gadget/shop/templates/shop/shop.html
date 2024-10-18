@@ -95,7 +95,7 @@
                                     <div class="product-img">
                                     {% if product.images.0 and product.images.1 %}
                                         {% with path_to_img='img/product-img/'|add:product.category|add:'/'|add:product.line|add:'/' %}
-                                            <img src="{% static path_to_img|add:product.images.1 %}" alt="">
+                                            <img src="{% static path_to_img|add:product.images.1 %}" alt="{{ product.title }}">
                                             <!-- Hover Thumb -->
                                             <img class="hover-img" src="{% static path_to_img|add:product.images.0 %}" alt="">
                                         {% endwith %}

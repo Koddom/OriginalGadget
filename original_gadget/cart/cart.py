@@ -31,11 +31,13 @@ class Cart:
 
         self.save()
 
+        return product_dict
+
     def save(self):
         self.session.modified = True
 
-    def remove(self, product):
-        product_id = str(product.id)
+    def remove(self, product_id):
+        product_id = str(product_id)
         if product_id in self.cart:
             del self.cart[product_id]
 
@@ -45,8 +47,8 @@ class Cart:
         product_ids = self.cart.keys()
         products = []  # список продуктов в корзине
         cart = self.cart.copy()
-        for product in products:
-            cart[str(product.id)]['product'] = product
+        # for product in products:
+        #     cart[str(product.id)]['product'] = product
 
         for item in cart.values():
             item['price'] = item['price']

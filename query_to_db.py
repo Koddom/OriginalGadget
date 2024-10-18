@@ -56,8 +56,7 @@ def get_lines_and_products_in_category(category):
 
     # сначала получаем таблицу продуктов в категории
     query = '''
-        CREATE TEMPORARY TABLE product_in_category
-        AS
+        CREATE TEMPORARY TABLE product_in_category AS
         SELECT 
             product_id,
             line
@@ -90,14 +89,14 @@ def get_lines_and_products_in_category(category):
 
     # Временная таблица с картинками
     query = '''
-            CREATE TEMPORARY TABLE image
-            SELECT
-                product_id,
-                GROUP_CONCAT(name_of_img ORDER BY number_of_image ASC SEPARATOR ';') AS images
-            FROM img_of_product
-            WHERE product_id IN (SELECT product_id FROM product_in_category)
-            GROUP BY product_id;
-        '''
+        CREATE TEMPORARY TABLE image
+        SELECT
+            product_id,
+            GROUP_CONCAT(name_of_img ORDER BY number_of_image ASC SEPARATOR ';') AS images
+        FROM img_of_product
+        WHERE product_id IN (SELECT product_id FROM product_in_category)
+        GROUP BY product_id;
+    '''
     try:
         cur.cursor.execute(query)
     except Error as e:
@@ -503,36 +502,20 @@ def get_info_product_for_cart(product_id):
     except Error as e:
         print(e)
 
-    # Временная таблица с ценой
-    query = '''
-            CREATE TEMPORARY TABLE actual_price
-            SELECT 
-                product_id,
-                MAX(price) AS price
-            FROM price_of_product
-            WHERE product_id IN (
-                            SELECT id FROM cart_product
-            )
-            GROUP BY product_id;
-        '''
-    try:
-        cur.cursor.execute(query)
-    except Error as e:
-        print(e)
 
     # Временная таблица с описанием
-    query = '''
-            CREATE TEMPORARY TABLE description
-            SELECT 
-                product_id, 
-                description
-            FROM description_of_product
-            WHERE product_id IN (SELECT id FROM cart_product);
-        '''
-    try:
-        cur.cursor.execute(query)
-    except Error as e:
-        print(e)
+    # query = '''
+    #         CREATE TEMPORARY TABLE description
+    #         SELECT
+    #             product_id,
+    #             description
+    #         FROM description_of_product
+    #         WHERE product_id IN (SELECT id FROM cart_product);
+    #     '''
+    # try:
+    #     cur.cursor.execute(query)
+    # except Error as e:
+    #     print(e)
 
     # Временная таблица с картинками
     query = '''
@@ -540,7 +523,7 @@ def get_info_product_for_cart(product_id):
             SELECT
                 product_id,
                 GROUP_CONCAT(name_of_img ORDER BY number_of_image ASC SEPARATOR ';') AS images
-            FROM image_of_product
+            FROM img_of_product
             WHERE product_id IN (SELECT id FROM cart_product)
             GROUP BY product_id;
         '''
@@ -569,18 +552,18 @@ def get_info_product_for_cart(product_id):
                 cart_product.id,
                 cart_product.title,
                 cart_product.slug,
-                actual_price.price,
-                description.description,
-                image.images,
+                price_of_product.price,
+                description_of_product.description,
+                COALESCE(image.images, '') AS images,
                 product_in_line.line,
                 category_of_product.category
             FROM cart_product
-            LEFT JOIN actual_price
-            ON cart_product.id = actual_price.product_id
-            LEFT JOIN description
-            ON cart_product.id = description.product_id
+            LEFT JOIN price_of_product
+            ON cart_product.id = price_of_product.product_id
+            LEFT JOIN description_of_product
+            ON cart_product.id = description_of_product.product_id
             LEFT JOIN image
-            ON cart_product.id = description.product_id
+            ON cart_product.id = image.product_id
             LEFT JOIN product_in_line
             ON cart_product.id = product_in_line.product_id
             LEFT JOIN category_of_product
@@ -595,11 +578,12 @@ def get_info_product_for_cart(product_id):
     product_info = cur.cursor.fetchone()
     if product_info:
         product_info = {
+            'id': product_info[0],
             'title': product_info[1],
             'slug': product_info[2],
             'price': product_info[3],
             'description': product_info[4],
-            'path_to_img': f'img/product-img/{product_info[7]}/{product_info[6]}/',
+            'path_to_img': f'img/product-img/{product_info[7]}/{product_info[6]}/',  # .../category/line/
             'images': [img_name.strip() for img_name in product_info[5].split(';')],
             'line': product_info[6],
             'category': product_info[7],
@@ -694,8 +678,13 @@ def update_price(product_id, new_price):
 # Функции добавления объектов в БД
 def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, description, sku_ya_shop: tuple = None):
     """
-    Добавляет записи в таблицы product, product_in_line, description_of_product, sku_of_product
-    НЕ устанавливает цену
+    Проверяет есть ли продукт в таблице sku_of_product
+    и если есть
+        Обновляет product, product_in_line, description_of_product
+    иначе
+        Добавляет записи в таблицы product, product_in_line, description_of_product, sku_of_productа
+    НЕ устанавливает цену.
+
     :param title:
     :param full_name:
     :param line:
@@ -782,6 +771,18 @@ def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, des
     return product_id
 
 
+def test():
+    # установка изобрадений для товара в базе данных
+    query = '''
+        INSERT INTO img_of_product (product_id, number_of_image, name_of_img)
+        SELECT id, 3, 'iphone-14-starlight-3.webp'
+        FROM product
+        WHERE title LIKE '%iPhone 14,%' 
+        AND title LIKE '%starlight%'
+        ON DUPLICATE KEY UPDATE name_of_img = 'iphone-14-starlight-3.webp';
+    '''
+
+
 def example():
     cur = CursorDB()
     query = '''
@@ -798,9 +799,10 @@ def example():
 
 def main():
     # update_price(4419, 126)
-    get_products_in_line('iPhone 14')
+    # get_products_in_line('iPhone 14')
     # get_category_and_lines_by_line('iPhone 16 Pro')
-    # get_lines_and_products_in_category('iPhone')
+    # get_lines_and_products_in_category('iPad')
+    get_info_product_for_cart(100)
 
 
 if __name__ == '__main__':
