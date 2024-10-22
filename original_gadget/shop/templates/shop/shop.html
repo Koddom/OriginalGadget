@@ -97,7 +97,7 @@
                                         {% with path_to_img='img/product-img/'|add:product.category|add:'/'|add:product.line|add:'/' %}
                                             <img src="{% static path_to_img|add:product.images.1 %}" alt="{{ product.title }}">
                                             <!-- Hover Thumb -->
-                                            <img class="hover-img" src="{% static path_to_img|add:product.images.0 %}" alt="">
+                                            <img class="hover-img" src="{% static path_to_img|add:product.images.0 %}" alt="{{ product.title }}">
                                         {% endwith %}
                                     {% else %}
                                         <img src="{% static 'img/product-img/no_image_1.jpg' %}" alt="">
@@ -117,12 +117,7 @@
                                             <h6>{{ product.title }}</h6>
                                         </a>
                                     </div>
-                                    <!-- Ratings & Cart -->
-                                    <div class="ratings-cart text-right">
-                                        <div class="cart">
-                                            <a href="cart.html" data-toggle="tooltip" data-placement="left" title="Add to Cart"><img src="{% static 'img/core-img/cart.png' %}" alt=""></a>
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
                         </div>

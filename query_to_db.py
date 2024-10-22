@@ -445,7 +445,8 @@ def get_info_product(slug=None, product_id=None):
             price,
             IFNULL(description.description, '') AS description,
             IFNULL(image.images, '') AS images,
-            pil.line
+            pil.line,
+            full_name
         FROM cart_product cp
         LEFT JOIN actual_price
         ON cp.id = actual_price.product_id
@@ -474,6 +475,7 @@ def get_info_product(slug=None, product_id=None):
             'description': product_info[4],
             'images': images,
             'line': product_info[6],
+            'full_name': product_info[7]
         }
         return product_info
     else:
