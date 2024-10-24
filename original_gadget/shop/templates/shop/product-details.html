@@ -145,7 +145,7 @@
                             </div>
 
                             <!-- Add to Cart Form -->
-                            <form class="cart clearfix" method="post" action="{% url 'cart:cart_add' product_id=product.id %}">
+                            <form class="cart clearfix" method="post" action="{% url 'cart:cart_add' %}">
                                 {% csrf_token %}
                                 <button type="submit" name="addtocart" value="5" class="btn amado-btn">
                                     {% if product_in_cart %}

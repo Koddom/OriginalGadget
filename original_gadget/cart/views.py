@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 import requests
 
 from .cart import Cart
@@ -12,14 +13,20 @@ import query_to_db
 
 
 @require_POST
-def cart_add(request, product_id):
-    cart = Cart(request)
+def cart_add(request):
 
+    product_id = request.POST.get('product_id')  # берём данные из AJAX запроса
+
+    cart = Cart(request)
     product_info = cart.add(product_id)
+    cart.quantity = cart.__len__()
 
     category = product_info['category']
     slug = product_info['slug']
-    return redirect('product_details', category=category, product=slug)
+
+    # Возвращаем JSON с количеством товаров в корзине
+    return JsonResponse({'cart_quantity': cart.__len__()})
+    # return redirect('product_details', category=category, product=slug)
 
 
 # @require_POST

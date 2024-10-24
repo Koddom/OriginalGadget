@@ -18,6 +18,8 @@
     <!-- Core Style CSS -->
     <link rel="stylesheet" type="text/css" href="{% static 'shop/css/core-style.css' %}">
 
+    <!-- Подключение jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 
 <body>
@@ -117,7 +119,14 @@
                                             <h6>{{ product.title }}</h6>
                                         </a>
                                     </div>
+                                    <!-- Ratings & Cart -->
+                                    <div class="ratings-cart text-right">
+                                        <div class="cart">
+                                            <button class="add-to-cart-btn" data-product-id="{{ product.id }}"></button>
+                                            <img class="add-to-cart-btn" data-product-id="{{ product.id }}" src="{% static 'img/core-img/cart.png' %}" alt="купить">
 
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -143,7 +152,33 @@
     {% include 'newsletter.html' %}
 
     {% include 'footer.html' %}
+<script>
+    // скрипт добавления товара без обновления страницы
 
+    $(document).ready(function() {
+    $('.add-to-cart-btn').click(function() {
+        var productId = $(this).data('product-id');
+
+        // AJAX запрос для добавления товара в корзину
+        $.ajax({
+            url: '{% url "cart:cart_add" %}',
+            method: 'POST',
+            data: {
+                'product_id': productId,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function(response) {
+                $('#cart-count').text('(' + response.cart_quantity + ')');
+                alert('Товар добавлен в корзину!');
+            },
+            error: function(response) {
+                alert('Ошибка добавления товара в корзину.');
+            }
+        });
+    });
+});
+
+</script>
 </body>
 
 </html>
