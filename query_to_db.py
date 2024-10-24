@@ -28,7 +28,7 @@ def get_all_categories():
     """
     :return: Список категорий ['airpods', 'ipad', 'iphone', 'mac', 'pencil', 'watch']
     """
-    query = "SELECT * FROM `category`;"
+    query = "SELECT title, position FROM `category` ORDER BY position;"
     cur = CursorDB()
     try:
         cur.cursor.execute(query)
@@ -66,6 +66,8 @@ def get_lines_and_products_in_category(category):
             FROM `product_line`
             WHERE `category` = %s
             )
+        ORDER BY RAND()
+        LIMIT 20;
         ;
     '''
     data = (category,)
@@ -804,7 +806,8 @@ def main():
     # get_products_in_line('iPhone 14')
     # get_category_and_lines_by_line('iPhone 16 Pro')
     # get_lines_and_products_in_category('iPad')
-    get_info_product_for_cart(100)
+    # get_info_product_for_cart(100)
+    get_info_product_for_cart(277)
 
 
 if __name__ == '__main__':

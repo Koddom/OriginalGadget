@@ -122,7 +122,6 @@
                                     <!-- Ratings & Cart -->
                                     <div class="ratings-cart text-right">
                                         <div class="cart">
-                                            <button class="add-to-cart-btn" data-product-id="{{ product.id }}"></button>
                                             <img class="add-to-cart-btn" data-product-id="{{ product.id }}" src="{% static 'img/core-img/cart.png' %}" alt="купить">
 
                                         </div>
@@ -147,9 +146,6 @@
         <!--   end Right column showcase with goods   -->
     </div>
     <!-- ##### Main Content Wrapper End ##### -->
-
-
-    {% include 'newsletter.html' %}
 
     {% include 'footer.html' %}
 <script>

@@ -28,7 +28,7 @@ def buy_category(request, category):
             if characteristic != 'csrfmiddlewaretoken':
                 selected_characteristic[characteristic] = request.POST.getlist(characteristic)
                 # lines_and_products = query_to_db
-        input(selected_characteristic)  # словарь выбранных характеристик
+        # input(selected_characteristic)  # словарь выбранных характеристик
 
     lines_and_products = query_to_db.get_lines_and_products_in_category(category)
 

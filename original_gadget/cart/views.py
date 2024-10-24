@@ -29,6 +29,25 @@ def cart_add(request):
     # return redirect('product_details', category=category, product=slug)
 
 
+@require_POST
+def cart_add_from_product(request, product_id):
+    """
+    Данная функция является временным форком cart_add и работает без ajax запроса. Просто обновляя страницу
+    :param request:
+    :param product_id:
+    :return:
+    """
+
+    cart = Cart(request)
+    product_info = cart.add(product_id)
+    cart.quantity = cart.__len__()
+
+    category = product_info['category']
+    slug = product_info['slug']
+
+    return redirect('product_details', category=category, product=slug)
+
+
 # @require_POST
 def remove_from_cart(request, product_id):
     cart = Cart(request)

@@ -272,15 +272,19 @@ def create_basic_data(cursor):
     cursor.executemany(query, categories)
 
     # Создаём линейки(поколения) продуктов в категориях
-    # Упорядочивание элементов происходит по уменьшению
+    # Упорядочивание элементов происходит по уменьшению. Чем больше число, тем новее линейка
     product_line = [
-        (200, 'Mac', 'MacBook Air'),
-        (201, 'Mac', 'MacBook Air'),
-        (202, 'Mac', 'MacBook Pro'),
-        (203, 'Mac', 'iMac'),
-        (204, 'Mac', 'Mac mini'),
-        (205, 'Mac', 'Mac Studio'),
-        (206, 'Mac', 'Mac Pro'),
+        (200, 'Mac', 'Mac Pro'),
+        (201, 'Mac', 'Mac Studio'),
+        (202, 'Mac', 'iMac'),
+        (203, 'Mac', 'Mac mini'),
+        (204, 'Mac', 'MacBook Pro'),
+        (205, 'Mac', 'MacBook Air'),
+
+        (101, 'iPad', 'iPad mini'),
+        (102, 'iPad', 'iPad'),
+        (103, 'iPad', 'iPad Air'),
+        (104, 'iPad', 'iPad Pro'),
 
         (0, 'iPhone', 'iPhone SE',),
         (1, 'iPhone', 'iPhone 12',),
@@ -301,10 +305,22 @@ def create_basic_data(cursor):
         (16, 'iPhone', 'iPhone 16 Pro',),
         (17, 'iPhone', 'iPhone 16 Pro Max',),
 
-        (101, 'iPad', 'iPad mini'),
-        (102, 'iPad', 'iPad'),
-        (103, 'iPad', 'iPad Air'),
-        (104, 'iPad', 'iPad Pro'),
+        (300, 'Watch', 'Apple Watch SE'),
+        (301, 'Watch', 'Apple Watch SE 2'),
+        (302, 'Watch', 'Apple Watch Ultra'),
+        (303, 'Watch', 'Apple Watch Ultra 2'),
+        (304, 'Watch', 'Apple Watch Series 10'),
+
+        (400, 'AirPods', 'Airpods 3'),
+        (401, 'AirPods', 'Airpods Pro'),
+        (402, 'AirPods', 'Airpods Max'),
+        (403, 'AirPods', 'Airpods Pro 2'),
+        (404, 'AirPods', 'Airpods 4'),
+
+        (500, 'TV & Home', 'Home Pod mini'),
+        (501, 'TV & Home', 'Home Pod'),
+        (502, 'TV & Home', 'Apple TV 4K'),
+
 
     ]
 
@@ -380,7 +396,7 @@ def main():
     cursor.execute('CREATE DATABASE IF NOT EXISTS original_gadget CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;')
     cursor.execute('USE original_gadget')
 
-    create_schema(cursor)
+    # create_schema(cursor)
     create_basic_data(cursor)
     connect.close()
 

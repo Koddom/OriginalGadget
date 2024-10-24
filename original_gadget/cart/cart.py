@@ -31,7 +31,6 @@ class Cart:
             self.cart[product_id]['quantity'] = quantity
 
         self.save()
-
         return product_dict
 
     def save(self):
