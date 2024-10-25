@@ -276,8 +276,8 @@ def create_basic_data(cursor):
     product_line = [
         (200, 'Mac', 'Mac Pro'),
         (201, 'Mac', 'Mac Studio'),
-        (202, 'Mac', 'iMac'),
-        (203, 'Mac', 'Mac mini'),
+        (202, 'Mac', 'Mac mini'),
+        (203, 'Mac', 'iMac'),
         (204, 'Mac', 'MacBook Pro'),
         (205, 'Mac', 'MacBook Air'),
 
@@ -305,17 +305,17 @@ def create_basic_data(cursor):
         (16, 'iPhone', 'iPhone 16 Pro',),
         (17, 'iPhone', 'iPhone 16 Pro Max',),
 
+        (299, 'Watch', 'Apple Watch Series 9'),
         (300, 'Watch', 'Apple Watch SE'),
         (301, 'Watch', 'Apple Watch SE 2'),
         (302, 'Watch', 'Apple Watch Ultra'),
         (303, 'Watch', 'Apple Watch Ultra 2'),
         (304, 'Watch', 'Apple Watch Series 10'),
 
-        (400, 'AirPods', 'Airpods 3'),
-        (401, 'AirPods', 'Airpods Pro'),
-        (402, 'AirPods', 'Airpods Max'),
-        (403, 'AirPods', 'Airpods Pro 2'),
-        (404, 'AirPods', 'Airpods 4'),
+        (400, 'AirPods', 'AirPods 3'),
+        (402, 'AirPods', 'AirPods Max'),
+        (403, 'AirPods', 'AirPods Pro 2'),
+        (404, 'AirPods', 'AirPods 4'),
 
         (500, 'TV & Home', 'Home Pod mini'),
         (501, 'TV & Home', 'Home Pod'),

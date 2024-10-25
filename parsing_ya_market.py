@@ -4,6 +4,7 @@ import csv
 import re
 import sys
 import query_to_db
+from settings import SHOP_PREFIX
 
 '''
 [
@@ -28,15 +29,17 @@ headers = {
 
 # Форматные функции
 def replace_letter_of_memory(title):
-    pattern_gb = r'(ГБ|Гб|гб|гБ|GB|Gb|gb|gB)'
+    pattern_gb = r'(ГБ|Гб|гб|гБ|GB|gb|gB)'
     match = re.search(pattern_gb, title)
-    if match:
+    while match:
         title = title.replace(match.group(1), 'Gb')
+        match = re.search(pattern_gb, title)
 
-    pattern_tb = r'(ТБ|Тб|Tb|TB)'
+    pattern_tb = r'(ТБ|Тб|TB)'
     match = re.search(pattern_tb, title)
-    if match:
+    while match:
         title = title.replace(match.group(1), 'Tb')
+        match = re.search(pattern_tb, title)
 
     if '(PRODUCT)RED' in title:
         title = title.replace('(PRODUCT)RED', 'красный')
@@ -306,6 +309,85 @@ def define_processor(title):
         else:
             input('Не обнаружен процессор')
 
+
+# форматные функции для mac
+def create_norm_title_for_mac(title: str):
+    title = title.replace('Мини-ПК Apple ', '')
+    title = replace_letter_of_memory(title)
+    return title
+
+
+# форматные функции для macbook
+def create_norm_title_for_macbook(title: str):
+    # print(title)
+    title = title.replace('Ноутбук Apple ', '')
+    pattern = r'(\(\d{4}\))'
+    match = re.search(pattern, title)
+    if match:
+        year = match.group(1)
+        title = title.replace(year + ' ', '')
+    return title
+
+
+def define_line_for_macbook(title):
+    if 'macbook pro' in title.lower():
+        line = 'MacBook Pro'
+    elif 'macbook air' in title.lower():
+        line = 'MacBook Air'
+    else:
+        line = 'Macbook'
+    return line
+
+
+# форматные функции для AppleWatch
+def create_norm_title_for_watch(full_name):
+    title = full_name.replace('Умные часы ', '')
+    return title
+
+
+def create_norm_title_for_imac(title):
+    title = title.replace('Моноблок Apple ', '')
+    color_eng = title.split(', ')[-1].split()[0]
+    title = ', '.join(title.split(', ')[:-1]) + ', ' + color_eng
+    return title
+
+
+def define_line_for_watch(title):
+    title = title.lower()
+    if any(substring in title for substring in ('se2', 'se gen 2', 'gen 2')):
+        line = 'Apple Watch SE 2'
+    elif any(substring in title for substring in ('series 9',)):
+        line = 'Apple Watch Series 9'
+    elif any(substring in title for substring in ('ultra 2',)):
+        line = 'Apple Watch Ultra 2'
+    elif any(substring in title for substring in ('ultra',)):
+        line = 'Apple Watch Ultra'
+
+    return line
+
+
+def define_line_for_airpods(title):
+    title = title.lower()
+    if 'airpods max' in title:
+        line = 'AirPods Max'
+    elif 'airpods pro 2' in title:
+        line = 'AirPods Pro 2'
+    elif 'airpods 3' in title:
+        line = 'AirPods 3'
+    elif 'airpods 2' in title:
+        line = 'AirPods 2'
+    else:
+        input('Непонятно какая линейка у ' + title)
+
+    return line
+
+
+# Форматные функции для AirPods
+def create_norm_title_for_airpods(title):
+    title = title.replace('Беспроводные наушники Apple ', '')
+    title = ','.join(title.split(',')[:-1])
+    return title
+
 # конец Форматные функции
 
 
@@ -363,7 +445,7 @@ def parsing_list_of_product_as_iphone(list_of_products):
 
         print('-------------', end='\n\n')
         full_name = 'Смартфон Apple ' + title
-        sku_ya_shop = ('SM', sku)
+        sku_ya_shop = (SHOP_PREFIX, sku)
         colors = (color, color_ru, color_filter)
         print('------')
 
@@ -424,10 +506,185 @@ def parsing_list_of_product_as_ipad(list_of_products):
 
         print('-------------', end='\n\n')
 
-        sku_ya_shop = ('SM', sku)
+        sku_ya_shop = (SHOP_PREFIX, sku)
         product_id = query_to_db.add_iphone(title, full_name, line, memory, '', colors, screen_diagonal, description, sku_ya_shop)
         query_to_db.update_price(product_id, price)
         # input()
+
+
+def parsing_list_of_product_as_mac(list_of_products):
+    products = []
+    counter = 1
+    for item in list_of_products:
+        sku = item['offer']['offerId']
+        full_name = item['mapping']['marketSkuName']
+        title = create_norm_title_for_mac(full_name)
+        line = 'Mac mini' if 'mac mini' in title.lower() else None
+        if not line:
+            print('Линейка не обнаружена')
+            return
+
+        price = int(item['offer']['basicPrice']['value'])
+        if 'description' in item['offer']:
+            description = item['offer']['description']
+        else:
+            # print('!!! Нет описания')
+            description = ''
+
+        sku_ya_shop = (SHOP_PREFIX, sku)
+        # printing
+        print(counter, end=' - ')
+        counter += 1
+        print('title', title, sep=': ')
+        print('full_name', full_name, sep=': ')
+        print('sku', sku, sep=': ')
+        print('line', line, sep=': ')
+
+        print('-------------', end='\n\n')
+
+        product_id = query_to_db.add_mac(title, full_name, line, description, sku_ya_shop)
+        query_to_db.update_price(product_id, price)
+
+
+def parsing_list_of_product_as_macbook(list_of_products):
+    products = []
+    counter = 1
+    for item in list_of_products:
+        sku = item['offer']['offerId']
+        full_name = item['offer']['name']  # название из карточки которое мы создаём сами
+        title = create_norm_title_for_macbook(full_name)
+        line = define_line_for_macbook(title)
+        price = int(item['offer']['basicPrice']['value'])
+        if 'description' in item['offer']:
+            description = item['offer']['description']
+        else:
+            # print('!!! Нет описания')
+            description = ''
+
+        sku_ya_shop = (SHOP_PREFIX, sku)
+        # printing
+        print(counter, end=' - ')
+        counter += 1
+        print('title', title, sep=': ')
+        print('full_name', full_name, sep=': ')
+        print('sku', sku, sep=': ')
+        print('line', line, sep=': ')
+        print('price', price, sep=': ')
+
+        print('-------------', end='\n\n')
+
+        product_id = query_to_db.add_mac(title, full_name, line, description, sku_ya_shop)
+        query_to_db.update_price(product_id, price)
+
+
+def parsing_list_of_product_as_imac(list_of_products):
+    products = []
+    counter = 1
+    for item in list_of_products:
+        sku = item['offer']['offerId']
+        full_name = item['offer']['name']  # название из карточки которое мы создаём сами
+        title = create_norm_title_for_imac(full_name)
+        line = 'iMac'
+        price = int(item['offer']['basicPrice']['value'])
+        if 'description' in item['offer']:
+            description = item['offer']['description']
+        else:
+            # print('!!! Нет описания')
+            description = ''
+
+        sku_ya_shop = (SHOP_PREFIX, sku)
+        # printing
+        print(counter, end=' - ')
+        counter += 1
+        print('title', title, sep=': ')
+        print('full_name', full_name, sep=': ')
+        print('sku', sku, sep=': ')
+        print('line', line, sep=': ')
+        print('price', price, sep=': ')
+
+        print('-------------', end='\n\n')
+
+        product_id = query_to_db.add_mac(title, full_name, line, description, sku_ya_shop)
+        query_to_db.update_price(product_id, price)
+
+
+def parsing_list_of_product_as_watch(list_of_products):
+    products = []
+    counter = 1
+    for item in list_of_products:
+        sku = item['offer']['offerId']
+        full_name = item['offer']['name']  # название из карточки которое мы создаём сами
+        title = create_norm_title_for_watch(full_name)
+        line = define_line_for_watch(title)
+        price = int(item['offer']['basicPrice']['value'])
+        if 'description' in item['offer']:
+            description = item['offer']['description']
+        else:
+            # print('!!! Нет описания')
+            description = ''
+
+        sku_ya_shop = (SHOP_PREFIX, sku)
+        # printing
+        print(counter, end=' - ')
+        counter += 1
+        print('title', title, sep=': ')
+        print('full_name', full_name, sep=': ')
+        print('sku', sku, sep=': ')
+        print('line', line, sep=': ')
+        print('price', price, sep=': ')
+
+        print('-------------', end='\n\n')
+
+        product_id = query_to_db.add_mac(title, full_name, line, description, sku_ya_shop)
+        query_to_db.update_price(product_id, price)
+
+
+def parsing_list_of_product_as_airpods(list_of_products):
+    products = []
+    counter = 1
+    for item in list_of_products:
+        sku = item['offer']['offerId']
+        full_name = item['offer']['name']  # название из карточки которое мы создаём сами
+        title = create_norm_title_for_airpods(full_name)
+        line = define_line_for_airpods(title)
+        price = int(item['offer']['basicPrice']['value'])
+        if 'description' in item['offer']:
+            description = item['offer']['description']
+        else:
+            # print('!!! Нет описания')
+            description = ''
+
+        sku_ya_shop = (SHOP_PREFIX, sku)
+        # printing
+        print(counter, end=' - ')
+        counter += 1
+        print('title', title, sep=': ')
+        print('full_name', full_name, sep=': ')
+        print('sku', sku, sep=': ')
+        print('line', line, sep=': ')
+        print('price', price, sep=': ')
+
+        print('-------------', end='\n\n')
+
+        product_id = query_to_db.add_mac(title, full_name, line, description, sku_ya_shop)
+        query_to_db.update_price(product_id, price)
+
+
+def parsing_list_of_product(category_id, list_of_products):
+    if category_id == '91491':  # мобильные телефоны
+        parsing_list_of_product_as_iphone(list_of_products)
+    elif category_id == '6427100':  # планшеты
+        parsing_list_of_product_as_ipad(list_of_products)
+    elif category_id == '91011':  # настольные компьютеры
+        parsing_list_of_product_as_mac(list_of_products)
+    elif category_id == '91013':  # ноутбуки
+        parsing_list_of_product_as_macbook(list_of_products)
+    elif category_id == '12382295':  # моноблоки
+        parsing_list_of_product_as_imac(list_of_products)
+    elif category_id == '10498025':  # умные часы и браслеты
+        parsing_list_of_product_as_watch(list_of_products)
+    elif category_id == '90555':  # умные часы и браслеты
+        parsing_list_of_product_as_airpods(list_of_products)
 
 
 def get_goods_from_ya(category_id: str):
@@ -459,10 +716,7 @@ def get_goods_from_ya(category_id: str):
         next_page_token = data['result']['paging']['nextPageToken'] if data['result']['paging'] else None
 
         # форматируем список для получения нужных данных и записи их в БД
-        if category_id == '91491':  # мобильные телефоны
-            parsing_list_of_product_as_iphone(list_of_products)
-        elif category_id == '6427100':  # планшеты
-            parsing_list_of_product_as_ipad(list_of_products)
+        parsing_list_of_product(category_id, list_of_products)
 
     else:
         print(f'Ошибка запроса к серверу yandex-market: {response.status_code}')
@@ -482,10 +736,7 @@ def get_goods_from_ya(category_id: str):
             next_page_token = data['result']['paging']['nextPageToken'] if data['result']['paging'] else None
 
             # форматируем список для получения нужных данных и записи их в БД
-            if category_id == '91491':  # мобильные телефоны
-                parsing_list_of_product_as_iphone(list_of_products)
-            elif category_id == '6427100':  # планшеты
-                parsing_list_of_product_as_ipad(list_of_products)
+            parsing_list_of_product(category_id, list_of_products)
 
         else:
             print(f'Ошибка запроса к серверу yandex-market: {response.status_code}')
@@ -498,8 +749,13 @@ def get_goods_from_ya(category_id: str):
 
 
 def main():
-    get_goods_from_ya("91491")  # мобильные телефоны
+    # get_goods_from_ya("91491")  # мобильные телефоны
     # get_goods_from_ya("6427100")  # планшеты
+    # get_goods_from_ya('91011')  # настольные компьютеры
+    # get_goods_from_ya('91013')  # ноутбуки
+    # get_goods_from_ya('12382295')  # моноблоки
+    # get_goods_from_ya('10498025')  # умные часы и браслеты
+    get_goods_from_ya('90555')  # Наушники и гарнитуры
 
 
 if __name__ == '__main__':
