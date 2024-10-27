@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import Error
 from django.utils.text import slugify
 from settings import connection_config_to_db
+from settings import DB_NAME
 
 
 class CursorDB:
@@ -12,7 +13,7 @@ class CursorDB:
                 **connection_config_to_db
             )
             self.cursor = self.connection.cursor()
-            self.cursor.execute('USE original_gadget')
+            self.cursor.execute(f'USE {DB_NAME}')
             # print("Connection to MySQL DB successful")
         except Error as e:
             if e.errno == 2061:
