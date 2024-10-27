@@ -1,5 +1,6 @@
 import mysql.connector
 from mysql.connector import Error
+from django.utils.text import slugify
 from settings import connection_config_to_db
 
 
@@ -146,11 +147,15 @@ def get_lines_and_products_in_category(category):
             products = []
 
         # Добавляем продукт в текущий список продуктов
+        category_slug = slugify(category)
+        line_slug = slugify(line)
+        path_to_img = f'img/product-img/{category_slug}/{line_slug}/'
         product = {
             'id': id,
             'title': title,
             'slug': slug,
             'price': price,
+            'path_to_img': path_to_img,
             'images': images,
             'category': category,
             'line': line
@@ -345,12 +350,15 @@ def get_products_in_line(line):
 
     products = []
     for product_info in list_of_product:
+        category = slugify(product_info[5])
+        path_to_img = f'img/product-img/{category}/{slugify(line)}/'
         product = {
             'id': product_info[0],
             'title': product_info[1],
             'slug': product_info[2],
             'price': product_info[3],
             'images': [img_name.strip() for img_name in str(product_info[4]).split(';')],
+            'path_to_img': path_to_img,
             'category': product_info[5],
             'line': line,
         }
@@ -438,6 +446,19 @@ def get_info_product(slug=None, product_id=None):
     except Error as e:
         print(e)
 
+    # Временная таблица с категорией товара (узнаём через внутренний запрос к линейке товара)
+    query = f'''
+            CREATE TEMPORARY TABLE category_of_product
+            SELECT 
+                `category`
+            FROM `product_line`
+            WHERE `line` = (SELECT line FROM `product_in_line` WHERE `product_id` = (SELECT id FROM cart_product));
+        '''
+    try:
+        cur.cursor.execute(query)
+    except Error as e:
+        print(e)
+
     # результирующая выборка
     query = '''
         SELECT 
@@ -448,7 +469,8 @@ def get_info_product(slug=None, product_id=None):
             IFNULL(description.description, '') AS description,
             IFNULL(image.images, '') AS images,
             pil.line,
-            full_name
+            full_name,
+            (SELECT category FROM category_of_product) AS category
         FROM cart_product cp
         LEFT JOIN actual_price
         ON cp.id = actual_price.product_id
@@ -469,15 +491,20 @@ def get_info_product(slug=None, product_id=None):
     if product_info:
         # обработка если product_info[5] = ['']
         images = [img_name.strip() for img_name in product_info[5].split(';')] if product_info[5] else []
+        category_slug = slugify(product_info[8])
+        line_slug = slugify(product_info[6])
+        path_to_img = f'img/product-img/{category_slug}/{line_slug}/'
         product_info = {
             'id': product_info[0],
             'title': product_info[1],
             'slug': product_info[2],
             'price': product_info[3],
             'description': product_info[4],
+            'path_to_img': path_to_img,
             'images': images,
             'line': product_info[6],
-            'full_name': product_info[7]
+            'full_name': product_info[7],
+            'category': product_info[8],
         }
         return product_info
     else:
@@ -875,7 +902,7 @@ def main():
     # get_category_and_lines_by_line('iPhone 16 Pro')
     # get_lines_and_products_in_category('iPad')
     # get_info_product_for_cart(100)
-    get_info_product_for_cart(277)
+    print(get_info_product('iphone-14-128-gb-nanosim-esim-blue'))
 
 
 if __name__ == '__main__':

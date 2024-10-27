@@ -83,14 +83,14 @@
                                 {% if product.images %}
                                     <ol class="carousel-indicators">
                                         {% for image in product.images %}
-                                        <li {% if forloop.first %}class="active"{% endif %} data-target="#product_details_slider" data-slide-to="{{ forloop.counter0 }}" style="background-image: url('{% static 'img/product-img/' %}{{ category }}/{{ product.line }}/{{ image }}');">image</li>
+                                        <li {% if forloop.first %}class="active"{% endif %} data-target="#product_details_slider" data-slide-to="{{ forloop.counter0 }}" style="background-image: url('{% static product.path_to_img|add:image %}');">{{ image }}</li>
                                         {% endfor %}
                                     </ol>
                                     <div class="carousel-inner">
                                         {% for image in product.images %}
                                         <div {% if forloop.first %}class="carousel-item active"{% endif %} class="carousel-item">
-                                            <a class="gallery_img" href="{% static 'img/product-img/' %}{{ category }}/{{ product.line }}/{{ image }}">
-                                                <img class="d-block w-100" src="{% static 'img/product-img/' %}{{ category }}/{{ product.line }}/{{ image }}" alt="First slide">
+                                            <a class="gallery_img" href="{% static product.path_to_img|add:image %}">
+                                                <img class="d-block w-100" src="{% static product.path_to_img|add:image %}" alt="{{ product.line }}">
                                             </a>
                                         </div>
                                         {% endfor %}
@@ -103,12 +103,12 @@
                                     <div class="carousel-inner">
                                         <div class="carousel-item active" class="carousel-item">
                                         <a class="gallery_img" href="{% static 'img/product-img/no_image_1.jpg' %}">
-                                            <img class="d-block w-100" src="{% static 'img/product-img/no_image_1.jpg' %}" alt="First slide">
+                                            <img class="d-block w-100" src="{% static 'img/product-img/no_image_1.jpg' %}" alt="no image">
                                         </a>
                                         </div>
                                         <div class="carousel-item" class="carousel-item">
                                             <a class="gallery_img" href="{% static 'img/product-img/no_image_2.jpg' %}">
-                                                <img class="d-block w-100" src="{% static 'img/product-img/no_image_2.jpg' %}" alt="Second slide">
+                                                <img class="d-block w-100" src="{% static 'img/product-img/no_image_2.jpg' %}" alt="no image">
                                             </a>
                                         </div>
                                     </div>

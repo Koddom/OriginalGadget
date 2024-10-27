@@ -20,6 +20,7 @@ from settings import SHOP_PREFIX
 '''
 TOKEN = 'y0_AgAAAAA13VXGAAvz6QAAAAEHf7cVAAAB69pht3BEXrh32mlfvcdJRy7noQ'
 
+business_id = 96421931
 
 headers = {
     'Authorization': f'Bearer {TOKEN}',
@@ -400,6 +401,7 @@ def parsing_list_of_product_as_iphone(list_of_products):
     for item in list_of_products:
         sku = item['offer']['offerId']
         title = item['mapping']['marketSkuName']
+        print(counter, title)
         if title == 'Смартфон Apple iPhone 16 256 Gb nanoSIM+esim белый white':
             print(title)
         title = title.replace('Смартфон Apple ', '')
@@ -408,6 +410,11 @@ def parsing_list_of_product_as_iphone(list_of_products):
         title = replace_letter_of_memory(title)  # пишем нормальные буквы для памяти и заменяем цвет RED в названии
 
         line = define_line_for_iphone(title)
+        if line == 'iPhone 16':
+            get_item_by_sku(sku)
+        else:
+            continue
+
         pictures = item['offer']['pictures']
         color_in_product = title.split(',')[-1]  # цвет в названии обязательно должен отделяться запятой
         color, color_ru, color_filter = define_color(color_in_product)
@@ -694,7 +701,6 @@ def get_goods_from_ya(category_id: str):
      и извлекаем из неё next_page_token. Получаем последующие страницы, до тех пор пока есть next_page_token.
     :return:
     """
-    business_id = 96421931
     url = f'https://api.partner.market.yandex.ru/businesses/{business_id}/offer-mappings'
 
     # Формируем параметры для получения необходимой выборки
@@ -748,14 +754,35 @@ def get_goods_from_ya(category_id: str):
             break
 
 
+def get_item_by_sku(sku):
+    import json
+
+    url = f'https://api.partner.market.yandex.ru/businesses/{business_id}/offer-mappings'
+
+    # Формируем параметры для получения необходимой выборки
+    body = {
+        "offerIds": [sku],
+    }
+
+    params = {
+    }
+    response = requests.post(url, params=params, headers=headers, json=body)
+
+    if response.status_code == 200:
+        data = response.json()
+        print(json.dumps(data, indent=4, ensure_ascii=False))
+
+    input('Дальше?')
+
+
 def main():
-    # get_goods_from_ya("91491")  # мобильные телефоны
+    get_goods_from_ya("91491")  # мобильные телефоны
     # get_goods_from_ya("6427100")  # планшеты
     # get_goods_from_ya('91011')  # настольные компьютеры
     # get_goods_from_ya('91013')  # ноутбуки
     # get_goods_from_ya('12382295')  # моноблоки
     # get_goods_from_ya('10498025')  # умные часы и браслеты
-    get_goods_from_ya('90555')  # Наушники и гарнитуры
+    # get_goods_from_ya('90555')  # Наушники и гарнитуры
 
 
 if __name__ == '__main__':

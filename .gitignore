@@ -3,4 +3,5 @@
 db.sqlite3
 .idea/
 original_gadget/shop/static/img/product-img/iphone
-
+test.py
+*.sql
