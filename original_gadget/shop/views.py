@@ -11,7 +11,6 @@ import query_to_db
 
 
 def index(request):
-    # categories = '1 2 3 4 5 6'.split()
     context = {
         'current_category': 'HOME'
     }
@@ -29,7 +28,7 @@ def buy_category(request, category):
                 selected_characteristic[characteristic] = request.POST.getlist(characteristic)
                 # lines_and_products = query_to_db
         # input(selected_characteristic)  # словарь выбранных характеристик
-
+    category = category.replace('-', ' ')
     lines_and_products = query_to_db.get_lines_and_products_in_category(category)
 
     # lines = []

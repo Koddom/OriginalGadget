@@ -357,6 +357,8 @@ def define_line_for_watch(title):
     title = title.lower()
     if any(substring in title for substring in ('se2', 'se gen 2', 'gen 2')):
         line = 'Apple Watch SE 2'
+    elif any(substring in title for substring in ('series 10',)):
+        line = 'Apple Watch Series 10'
     elif any(substring in title for substring in ('series 9',)):
         line = 'Apple Watch Series 9'
     elif any(substring in title for substring in ('ultra 2',)):
@@ -619,11 +621,16 @@ def parsing_list_of_product_as_watch(list_of_products):
     products = []
     counter = 1
     for item in list_of_products:
+        print(item)
         sku = item['offer']['offerId']
         full_name = item['offer']['name']  # название из карточки которое мы создаём сами
         title = create_norm_title_for_watch(full_name)
         line = define_line_for_watch(title)
-        price = int(item['offer']['basicPrice']['value'])
+        if 'basicPrice' in item['offer']:  # цены может не быть если создали карточку, но не установили цену
+            price = int(item['offer']['basicPrice']['value'])
+        else:
+            price = 0
+
         if 'description' in item['offer']:
             description = item['offer']['description']
         else:
@@ -643,7 +650,7 @@ def parsing_list_of_product_as_watch(list_of_products):
         print('-------------', end='\n\n')
 
         product_id = query_to_db.add_mac(title, full_name, line, description, sku_ya_shop)
-        query_to_db.update_price(product_id, price)
+        # query_to_db.update_price(product_id, price)
 
 
 def parsing_list_of_product_as_airpods(list_of_products):
@@ -775,8 +782,35 @@ def get_item_by_sku(sku):
     input('Дальше?')
 
 
+def update_item(sku=''):
+    sku = 'AW-S10-46mm-GPS-Cellular-Rose-Gold-Sport-Band-Starlight-S/M'
+    name = "Умные часы Apple Watch Series 10 46 мм Aluminium Case, GPS+Cellular, Rose Gold, Sport Band, Starlight, S/M"
+
+    sku = 'AW-S10-46mm-GPS-Cellular-Silver-Sport-Band-Stone-Gray-M/L'
+    name = 'Умные часы Apple Watch Series 10 46 мм Aluminium Case, GPS+Cellular, Silver, Sport Band, Stone Gray, M/L'
+    url = f'https://api.partner.market.yandex.ru/businesses/{business_id}/offer-mappings/update'
+
+    body = {
+        "offerMappings": [
+            {
+                "offer": {
+                    "offerId": sku,
+                    "name": name
+                }
+            }
+        ]
+    }
+
+    params = {
+    }
+    response = requests.post(url, params=params, headers=headers, json=body)
+
+    print(response)
+
+
 def main():
-    get_goods_from_ya("91491")  # мобильные телефоны
+    update_item()
+    # get_goods_from_ya("91491")  # мобильные телефоны
     # get_goods_from_ya("6427100")  # планшеты
     # get_goods_from_ya('91011')  # настольные компьютеры
     # get_goods_from_ya('91013')  # ноутбуки
