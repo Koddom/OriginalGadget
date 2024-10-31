@@ -173,6 +173,7 @@ def create_schema(cursor):
                 category CHAR(255) NOT NULL,
                 line CHAR(255) NOT NULL UNIQUE,
                 line_position INT,
+                is_available TINYINT(1) DEFAULT 1,
                 PRIMARY KEY (category, line),
                 FOREIGN KEY (category) REFERENCES original_gadget.category(title) 
                     ON DELETE CASCADE 

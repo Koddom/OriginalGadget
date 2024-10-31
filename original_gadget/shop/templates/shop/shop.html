@@ -52,7 +52,7 @@
                 <div class="catagories-menu">
                     <ul>
                         {% for line in lines %}
-                            <li class="{% if line == current_line %}active{% endif %}"><a href="{% url 'buy_line' line=line|slugify %}">{{ line }}</a></li>
+                            <li class="{% if line|lower == current_line %}active{% endif %}"><a href="{% url 'buy_line' line=line|slugify %}">{{ line }}</a></li>
                         {% endfor %}
                     </ul>
                 </div>

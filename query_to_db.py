@@ -66,7 +66,7 @@ def get_lines_and_products_in_category(category):
         WHERE `line` in (
             SELECT line 
             FROM `product_line`
-            WHERE `category` = %s
+            WHERE `category` = %s AND is_available = 1
             )
         ORDER BY RAND()
         LIMIT 20;
@@ -180,7 +180,7 @@ def get_lines_in_category(category):
     query = '''
         SELECT line
         FROM product_line
-        WHERE category = %s
+        WHERE category = %s AND is_available = 1
         ORDER BY line_position DESC
         '''
     data = (category,)
@@ -656,7 +656,7 @@ def get_category_and_lines_by_line(line):
     query = '''
             SELECT `line`, `category`
             FROM `product_line`
-            WHERE `category` = (SELECT `category` FROM `product_line` WHERE `line` = %s)
+            WHERE `category` = (SELECT `category` FROM `product_line` WHERE `line` = %s) AND is_available = 1
             ORDER BY line_position DESC
             '''
     data = (line,)

@@ -10,7 +10,7 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Amado - Furniture Ecommerce Template | Home</title>
+    <title>OriginalGadget - Из Москвы с любовью | Home</title>
 
     <!-- Favicon  -->
     <link rel="icon" href="img/core-img/favicon.ico">
@@ -23,23 +23,7 @@
 
 <body>
     <!-- Search Wrapper Area Start -->
-    <div class="search-wrapper section-padding-100">
-        <div class="search-close">
-            <i class="fa fa-close" aria-hidden="true"></i>
-        </div>
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="search-content">
-                        <form action="#" method="get">
-                            <input type="search" name="search" id="search" placeholder="Type your keyword...">
-                            <button type="submit"><img src="{% static 'img/core-img/search.png' %}" alt=""></button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
     <!-- Search Wrapper Area End -->
 
     <!-- ##### Main Content Wrapper Start ##### -->
@@ -49,7 +33,7 @@
         <div class="mobile-nav">
             <!-- Navbar Brand -->
             <div class="amado-navbar-brand">
-                <a href="index.html"><img src="img/core-img/logo.png" alt=""></a>
+                <a href="index.html"><img src="img/core-img/logo.png" alt="Original Gadget logo"></a>
             </div>
             <!-- Navbar Toggler -->
             <div class="amado-navbar-toggler">
@@ -65,117 +49,117 @@
 
                 <!-- Single Catagory -->
                 <div class="single-products-catagory clearfix">
-                    <a href="shop.html">
-                        <img src="{% static 'img/bg-img/1.jpg' %}" alt="">
+                    <a href="{% url 'buy_line' line='mac-mini' %}">
+                        <img src="{% static 'img/bg-img/1.jpg' %}" alt="mac mini">
                         <!-- Hover Content -->
                         <div class="hover-content">
                             <div class="line"></div>
-                            <p>From $180</p>
-                            <h4>Modern Chair</h4>
+                            <p>Looks small. Lives large.</p>
+                            <h4>Mac Mini</h4>
                         </div>
                     </a>
                 </div>
 
                 <!-- Single Catagory -->
                 <div class="single-products-catagory clearfix">
-                    <a href="shop.html">
+                    <a href="{% url 'buy_line' line='iphone-16-pro' %}">
                         <img src="{% static 'img/bg-img/2.jpg' %}" alt="">
                         <!-- Hover Content -->
                         <div class="hover-content">
                             <div class="line"></div>
-                            <p>From $180</p>
-                            <h4>Minimalistic Plant Pot</h4>
+                            <p>Strength. Beauty.Titanium.</p>
+                            <h4>iPhone 16 Pro</h4>
                         </div>
                     </a>
                 </div>
 
                 <!-- Single Catagory -->
                 <div class="single-products-catagory clearfix">
-                    <a href="shop.html">
-                        <img src="{% static 'img/bg-img/3.jpg' %}" alt="">
+                    <a href="{% url 'buy_line' line='apple-watch-ultra-2' %}">
+                        <img src="{% static 'img/bg-img/3.jpg' %}" alt="apple watch ultra 2">
                         <!-- Hover Content -->
                         <div class="hover-content">
                             <div class="line"></div>
-                            <p>From $180</p>
-                            <h4>Modern Chair</h4>
+                            <p>Survival of the toughest</p>
+                            <h4>Apple Watch Ultra 2</h4>
                         </div>
                     </a>
                 </div>
 
                 <!-- Single Catagory -->
                 <div class="single-products-catagory clearfix">
-                    <a href="shop.html">
-                        <img src="{% static 'img/bg-img/4.jpg' %}" alt="">
+                    <a href="{% url 'buy_line' line='apple-tv-4k'%}">
+                        <img src="{% static 'img/bg-img/4.jpg' %}" alt="Apple TV 4K">
                         <!-- Hover Content -->
                         <div class="hover-content">
                             <div class="line"></div>
-                            <p>From $180</p>
-                            <h4>Night Stand</h4>
+                            <p>Cinematic in every sense</p>
+                            <h4>Apple TV 4K</h4>
                         </div>
                     </a>
                 </div>
 
                 <!-- Single Catagory -->
                 <div class="single-products-catagory clearfix">
-                    <a href="shop.html">
-                        <img src="{% static 'img/bg-img/5.jpg' %}" alt="">
+                    <a href="{% url 'buy_line' line='apple-watch-series-10'%}">
+                        <img src="{% static 'img/bg-img/5.jpg' %}" alt="apple watch series 10">
                         <!-- Hover Content -->
                         <div class="hover-content">
                             <div class="line"></div>
-                            <p>From $18</p>
-                            <h4>Plant Pot</h4>
+                            <p>Thinstant classic.</p>
+                            <h4>Apple Watch Series 10</h4>
                         </div>
                     </a>
                 </div>
 
                 <!-- Single Catagory -->
                 <div class="single-products-catagory clearfix">
-                    <a href="shop.html">
-                        <img src="{% static 'img/bg-img/6.jpg' %}" alt="">
+                    <a href="{% url 'buy_line' line='macbook-pro' %}">
+                        <img src="{% static 'img/bg-img/6.jpg' %}" alt="Macbook Pro">
                         <!-- Hover Content -->
                         <div class="hover-content">
                             <div class="line"></div>
-                            <p>From $320</p>
-                            <h4>Small Table</h4>
+                            <p>Make it a command performance</p>
+                            <h4>Macbook Pro</h4>
                         </div>
                     </a>
                 </div>
 
                 <!-- Single Catagory -->
                 <div class="single-products-catagory clearfix">
-                    <a href="shop.html">
-                        <img src="{% static 'img/bg-img/7.jpg' %}" alt="">
+                    <a href="{% url 'buy_line' line='ipad' %}">
+                        <img src="{% static 'img/bg-img/7.jpg' %}" alt="iPad">
                         <!-- Hover Content -->
                         <div class="hover-content">
                             <div class="line"></div>
-                            <p>From $318</p>
-                            <h4>Metallic Chair</h4>
+                            <p>Lovable. Drawable. Magical.</p>
+                            <h4>iPad</h4>
                         </div>
                     </a>
                 </div>
 
                 <!-- Single Catagory -->
                 <div class="single-products-catagory clearfix">
-                    <a href="shop.html">
-                        <img src="{% static 'img/bg-img/8.jpg' %}" alt="">
+                    <a href="{% url 'buy_line' line='imac' %}">
+                        <img src="{% static 'img/bg-img/8.jpg' %}" alt="iMac">
                         <!-- Hover Content -->
                         <div class="hover-content">
                             <div class="line"></div>
-                            <p>From $318</p>
-                            <h4>Modern Rocking Chair</h4>
+                            <p>Brilliant</p>
+                            <h4>iMac</h4>
                         </div>
                     </a>
                 </div>
 
                 <!-- Single Catagory -->
                 <div class="single-products-catagory clearfix">
-                    <a href="shop.html">
-                        <img src="{% static 'img/bg-img/9.jpg' %}" alt="">
+                    <a href="{% url 'buy_line' line='home-pod-mini' %}">
+                        <img src="{% static 'img/bg-img/9.jpg' %}" alt="Home Pod mini">
                         <!-- Hover Content -->
                         <div class="hover-content">
                             <div class="line"></div>
-                            <p>From $318</p>
-                            <h4>Home Deco</h4>
+                            <p>Nothing short of amazing</p>
+                            <h4>Home Pod mini</h4>
                         </div>
                     </a>
                 </div>
