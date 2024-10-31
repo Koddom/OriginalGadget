@@ -609,14 +609,19 @@ def get_info_product_for_cart(product_id):
 
     product_info = cur.cursor.fetchone()
     if product_info:
+        category_slug = slugify(product_info[7])
+        line_slug = slugify(product_info[6])
+        list_of_images = [img_name.strip() for img_name in product_info[5].split(';')]
+        if list_of_images == ['']:
+            list_of_images = []
         product_info = {
             'id': product_info[0],
             'title': product_info[1],
             'slug': product_info[2],
             'price': product_info[3],
             'description': product_info[4],
-            'path_to_img': f'img/product-img/{product_info[7]}/{product_info[6]}/',  # .../category/line/
-            'images': [img_name.strip() for img_name in product_info[5].split(';')],
+            'path_to_img': f'img/product-img/{category_slug}/{line_slug}/',  # .../category/line/
+            'images': list_of_images,
             'line': product_info[6],
             'category': product_info[7],
             'full_name': product_info[1],
