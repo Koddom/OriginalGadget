@@ -74,7 +74,7 @@
                         <div class="col-12 col-sm-6 col-md-12 col-xl-6">
                             <div class="single-product-wrapper">
                                 <!-- Product Image -->
-                                <a href="{% url 'product_details' category=current_category product=product.slug %}">
+                                <a href="{% url 'product_details' category=current_category|slugify product=product.slug %}">
                                     <div class="product-img">
                                     {% if product.images.0 and product.images.1 %}
                                         <img src="{% static product.path_to_img|add:product.images.1 %}" alt="{{ product.title }}">
@@ -94,7 +94,7 @@
                                     <div class="product-meta-data">
                                         <div class="line"></div>
                                         <p class="product-price">₽{{ product.price }}</p>
-                                        <a href="{% url 'product_details' category=current_category product=product.slug %}">
+                                        <a href="{% url 'product_details' category=current_category|slugify product=product.slug %}">
                                             <h6>{{ product.title }}</h6>
                                         </a>
                                     </div>

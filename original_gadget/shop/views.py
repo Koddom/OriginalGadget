@@ -95,9 +95,10 @@ def product_details(request, category, product):
     product = query_to_db.get_info_product(product_slug)  # product - product_slug
     cart = Cart(request)
     product_in_cart = cart.has_product(str(product['id']))
+    print(category)
     context = {
         'product': product,  #
-        'category': category,
+        'category': category.replace('-', ' ', category.count('-')),
         'product_in_cart': product_in_cart
     }
     return render(request, 'shop/product-details.html', context)

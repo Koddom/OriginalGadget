@@ -755,8 +755,12 @@ def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, des
         data = (line, product_id)
         cur.cursor.execute(query, data)
 
-        query = 'UPDATE description_of_product SET description = %s WHERE product_id = %s'
-        data = (description, product_id)
+        query = ''' 
+            INSERT INTO description_of_product (product_id, description)         
+            VALUES (%s, %s) 
+            ON DUPLICATE KEY UPDATE description = %s;
+        '''
+        data = (product_id, description, description)
         cur.cursor.execute(query, data)
 
     else:  # Создаём новые записи
@@ -908,7 +912,8 @@ def main():
     # get_category_and_lines_by_line('iPhone 16 Pro')
     # get_lines_and_products_in_category('iPad')
     # get_info_product_for_cart(100)
-    print(get_info_product('iphone-14-128-gb-nanosim-esim-blue'))
+    # print(get_info_product('iphone-14-128-gb-nanosim-esim-blue'))
+    print(get_info_product('iphone-15-128-gb-nanosim-nanosim-black'))
 
 
 if __name__ == '__main__':

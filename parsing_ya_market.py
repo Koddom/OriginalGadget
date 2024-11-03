@@ -391,6 +391,11 @@ def create_norm_title_for_airpods(title):
     title = ','.join(title.split(',')[:-1])
     return title
 
+
+def remove_rus_letter(title):
+    title = re.sub(r'[а-яА-ЯёЁ]', '', title)
+    return title.strip()
+
 # конец Форматные функции
 
 
@@ -684,6 +689,80 @@ def parsing_list_of_product_as_airpods(list_of_products):
         query_to_db.update_price(product_id, price)
 
 
+def parsing_list_of_product_as_tv_pristavka(list_of_products):
+    products = []
+    counter = 1
+    for item in list_of_products:
+        sku = item['offer']['offerId']
+        full_name = item['offer']['name']  # название из карточки которое мы создаём сами
+        title = remove_rus_letter(full_name)
+        line = 'Apple TV 4K'
+
+        if 'basicPrice' in item['offer']:  # цены может не быть если создали карточку, но не установили цену
+            price = int(item['offer']['basicPrice']['value'])
+        else:
+            price = 0
+
+        if 'description' in item['offer']:
+            description = item['offer']['description']
+        else:
+            # print('!!! Нет описания')
+            description = ''
+
+        sku_ya_shop = (SHOP_PREFIX, sku)
+        # printing
+        print(counter, end=' - ')
+        counter += 1
+        print('title', title, sep=': ')
+        print('full_name', full_name, sep=': ')
+        print('sku', sku, sep=': ')
+        print('line', line, sep=': ')
+        print('price', price, sep=': ')
+
+        print('-------------', end='\n\n')
+
+        product_id = query_to_db.add_mac(title, full_name, line, description, sku_ya_shop)
+        query_to_db.update_price(product_id, price)
+
+
+def parsing_list_of_product_as_home_pod(list_of_products):
+    products = []
+    counter = 1
+    for item in list_of_products:
+        sku = item['offer']['offerId']
+        full_name = item['offer']['name']  # название из карточки которое мы создаём сами
+        title = remove_rus_letter(full_name)
+        if 'mini' in title.lower():
+            line = 'Home Pod Mini'
+        else:
+            line = 'Home Pod'
+
+        if 'basicPrice' in item['offer']:  # цены может не быть если создали карточку, но не установили цену
+            price = int(item['offer']['basicPrice']['value'])
+        else:
+            price = 0
+
+        if 'description' in item['offer']:
+            description = item['offer']['description']
+        else:
+            # print('!!! Нет описания')
+            description = ''
+
+        sku_ya_shop = (SHOP_PREFIX, sku)
+        # printing
+        print(counter, end=' - ')
+        counter += 1
+        print('title', title, sep=': ')
+        print('full_name', full_name, sep=': ')
+        print('sku', sku, sep=': ')
+        print('line', line, sep=': ')
+        print('price', price, sep=': ')
+
+        print('-------------', end='\n\n')
+
+        product_id = query_to_db.add_mac(title, full_name, line, description, sku_ya_shop)
+        query_to_db.update_price(product_id, price)
+
 def parsing_list_of_product(category_id, list_of_products):
     if category_id == '91491':  # мобильные телефоны
         parsing_list_of_product_as_iphone(list_of_products)
@@ -699,6 +778,10 @@ def parsing_list_of_product(category_id, list_of_products):
         parsing_list_of_product_as_watch(list_of_products)
     elif category_id == '90555':  # умные часы и браслеты
         parsing_list_of_product_as_airpods(list_of_products)
+    elif category_id == '4165204':  # ТВ приставки
+        parsing_list_of_product_as_tv_pristavka(list_of_products)
+    elif category_id == '2724669':  # портативная акустика
+        parsing_list_of_product_as_home_pod(list_of_products)
 
 
 def get_goods_from_ya(category_id: str):
@@ -817,6 +900,8 @@ def main():
     # get_goods_from_ya('12382295')  # моноблоки
     # get_goods_from_ya('10498025')  # умные часы и браслеты
     # get_goods_from_ya('90555')  # Наушники и гарнитуры
+    # get_goods_from_ya('4165204')  # ТВ приставки
+    get_goods_from_ya('2724669')  # портативная акустика
 
 
 if __name__ == '__main__':
