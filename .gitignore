@@ -2,7 +2,11 @@
 *.pyc
 db.sqlite3
 .idea/
+original_gadget/shop/static/img/product-img/airpods
 original_gadget/shop/static/img/product-img/iphone
+original_gadget/shop/static/img/product-img/mac
+original_gadget/shop/static/img/product-img/tv-and-home
 test.py
+amado-master/.sass-cache/
 *.sql
 *psd
