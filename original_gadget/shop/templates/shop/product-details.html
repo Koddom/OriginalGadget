@@ -10,10 +10,10 @@
     <!-- The above 4 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 
     <!-- Title  -->
-    <title>Original Gadget - Из Москвы с любовью | Product Details</title>
+    <title>Купить {{product.full_name}} в магазине техники Apple Original Gadget - Из Москвы с любовью</title>
 
     <!-- Favicon  -->
-    <link rel="icon" href="img/core-img/favicon.ico">
+    <link rel="icon" href="{% static 'img/core-img/favicon.ico' %}">
 
     <!-- Core Style CSS -->
     <link rel="stylesheet" href="{% static 'shop/css/core-style.css' %}">
@@ -140,11 +140,6 @@
                                 <p class="avaibility"><i class="fa fa-circle"></i> In Stock</p>
                             </div>
 
-                            <div class="short_overview my-5">
-                                <p>описание подукта</p>
-                                <p>{{product.description|safe}}</p>
-                            </div>
-
                             <!-- Add to Cart Form -->
                             <form class="cart clearfix" method="post" action="{% url 'cart:cart_add_from_product' product_id=product.id %}">
                                 {% csrf_token %}
@@ -157,6 +152,10 @@
                                 </button>
                             </form>
 
+                            <div class="short_overview my-5">
+                                <p>{{product.description|safe}}</p>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -165,8 +164,6 @@
         <!-- Product Details Area End -->
     </div>
     <!-- ##### Main Content Wrapper End ##### -->
-
-    {% include 'newsletter.html' %}
 
     {% include 'footer.html' %}
 

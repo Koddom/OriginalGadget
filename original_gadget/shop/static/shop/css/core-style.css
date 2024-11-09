@@ -540,7 +540,7 @@ img {
     width: 230px;
     max-width: 230px;
     background-color: #f5f7fa;
-    padding: 100px 40px; }
+    padding: 100px 25px 100px 35px; }
     @media only screen and (min-width: 768px) and (max-width: 991px) {
       .main-content-wrapper .shop_sidebar_area {
         -webkit-box-flex: 0;

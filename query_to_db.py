@@ -37,10 +37,10 @@ def get_all_categories():
     except Error as e:
         print(e)
 
-    caterories = cur.cursor.fetchall()
-    caterories = [category[0] for category in caterories]
+    categories = cur.cursor.fetchall()
+    categories = [category[0] for category in categories]
 
-    return caterories
+    return categories
 
 
 def get_lines_and_products_in_category(category):
