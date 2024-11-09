@@ -83,7 +83,6 @@
                                         <td class="cart_product_img">
                                             <a href="{% url 'product_details' category=product.category product=product.slug %}">
                                                 {% if product.images %}
-                                                <p> {{ product.images }} </p>
                                                     <img src="{% static product.path_to_img|add:product.images.0 %}" alt="{{ product.title }}">
                                                 {% else %}
                                                     <img src="{% static 'img/product-img/no_image_1.jpg' %}" alt="нет картинки">
