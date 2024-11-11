@@ -14,10 +14,24 @@
 
     h6 {
         color: #131212;
-        font-size: 30px;
+        font-size: 20px;
         font-weight: 400;
     }
 
     .phone-or-telegram{
         margin-bottom: 50px;pwd
     }
+
+    .smart2 {
+        display: none;
+        width: 100%;
+        max-width: 100%;
+        background-color: #f5f7fa;
+        padding: 100px 40px;
+        position: relative;
+    }
+
+    @media only screen and (max-width: 767px) {
+        .smart2 {
+        display: block;
+    }}

@@ -17,6 +17,7 @@
 
     <!-- Core Style CSS -->
     <link rel="stylesheet" type="text/css" href="{% static 'shop/css/core-style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'shop/style.css' %}">
 
     <!-- Подключение jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -41,6 +42,21 @@
 
         {% include 'header.html' %}
 
+        <!-- ##### Single Widget for mobile##### -->
+        <div class="widget catagory mb-50 smart2">
+            <!-- Widget Title -->
+            <h6 class="widget-title mb-30">{{ current_category }}</h6>
+
+            <!--  Lines of product  -->
+            <div class="catagories-menu">
+                <ul>
+                    {% for line in lines %}
+                        <li class="{% if line|lower == current_line %}active{% endif %}"><a href="{% url 'buy_line' line=line|slugify %}">{{ line }}</a></li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        
         <div class="shop_sidebar_area">
 
             <!-- ##### Single Widget ##### -->
@@ -125,7 +141,6 @@
         <!--   end Right column showcase with goods   -->
     </div>
     <!-- ##### Main Content Wrapper End ##### -->
-
     {% include 'footer.html' %}
 <script>
     // скрипт добавления товара без обновления страницы
