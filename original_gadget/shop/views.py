@@ -5,8 +5,6 @@ from cart.cart import Cart  # из приложения cart Импортиру�
 
 # Добавляем путь к папке, содержащей query_to_db.py
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-
-# from query_to_db import *  # Импорт функции из query_to_db.py
 import query_to_db
 
 

@@ -7,7 +7,11 @@ original_gadget/shop/static/img/product-img/airpods
 original_gadget/shop/static/img/product-img/iphone
 original_gadget/shop/static/img/product-img/mac
 original_gadget/shop/static/img/product-img/tv-and-home
+original_gadget/shop/static/img/product-img/watch/
 test.py
 amado-master/.sass-cache/
 *.sql
 *psd
+raw_image/
+yandex-market/
+

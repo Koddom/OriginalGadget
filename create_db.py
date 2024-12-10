@@ -212,8 +212,6 @@ def create_schema(cursor):
     query = '''
     CREATE TABLE IF NOT EXISTS price_of_product(
         product_id INT UNSIGNED,
-        -- отказался от поля иначе получается слишком много соединений при получении стоимости во время запросов
-        -- `date` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, 
         price INT(10) UNSIGNED NOT NULL,
         PRIMARY KEY (product_id),
         FOREIGN KEY (product_id) REFERENCES original_gadget.product(id) ON DELETE CASCADE ON UPDATE CASCADE		
@@ -266,7 +264,7 @@ def create_basic_data(cursor):
         (2, 'iPhone'),
         (3, 'Watch'),
         (4, 'AirPods'),
-        (5, 'TV & Home')
+        (5, 'TV and Home')
     ]
     query = '''INSERT IGNORE INTO category (position, title) VALUES (%s, %s)
     '''
@@ -318,9 +316,9 @@ def create_basic_data(cursor):
         (403, 'AirPods', 'AirPods Pro 2'),
         (404, 'AirPods', 'AirPods 4'),
 
-        (500, 'TV & Home', 'Home Pod mini'),
-        (501, 'TV & Home', 'Home Pod'),
-        (502, 'TV & Home', 'Apple TV 4K'),
+        (500, 'TV and Home', 'Home Pod mini'),
+        (501, 'TV and Home', 'Home Pod'),
+        (502, 'TV and Home', 'Apple TV 4K'),
 
 
     ]

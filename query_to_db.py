@@ -122,6 +122,7 @@ def get_lines_and_products_in_category(category):
     ON `product_in_category`.product_id = `price_of_product`.product_id
     LEFT JOIN `image`
     ON `product_in_category`.product_id = `image`.product_id
+    WHERE product.is_available = 1
     ORDER BY line DESC;
     '''
     cur.cursor.execute(query)
@@ -257,10 +258,8 @@ def get_products_in_line(line):
     },
     {id:, title:, slug:, price:, 'images': [], 'category'}, ...]
     1 - сначала создаём временную таблицу "товары в одной линейке"
-    2 - чтобы создать временную таблицу "стоимость товара в линейке" (сюда попадую записи с дубликатами product_id)
-    3 - чтобы создать временную таблицу "актуальная дата для стоимости товара в линейке", чтобы отфильтровать стоимость по дате
-    4 - формируем таблицу с выборкой картинок в одну строку
-    5 - Чтобы сделать финальную выборку
+    2 - потом формируем таблицу с выборкой картинок в одну строку
+    3 - В финальной выборке соединяем с таблицей product и price_of_product
     """
 
     cur = CursorDB()
@@ -393,7 +392,7 @@ def get_info_product(slug=None, product_id=None):
     '''
     data = (slug,)
     if product_id:
-        query.replace('slug', 'id')
+        query = query.replace('slug', 'id')
         data = (product_id,)
 
     try:
@@ -680,26 +679,7 @@ def get_category_and_lines_by_line(line):
 # Функции записи в БД
 def update_price(product_id, new_price):
     cur = CursorDB()
-    """
-    query = f'''
-            INSERT INTO price_of_product (product_id, `date`, price)
-            SELECT {product_id}, NOW(), {new_price}
-            FROM dual
-            WHERE NOT EXISTS ( -- проверяем существует ли хотя бы одна запись. 
-                SELECT 1 -- необходимо при первом добавлении записи в таблицу price
-                FROM price_of_product 
-                WHERE product_id = {product_id} 
-                ORDER BY `date` DESC 
-                LIMIT 1
-            ) OR (
-                SELECT price 
-                FROM price_of_product 
-                WHERE product_id = {product_id} 
-                ORDER BY `date` DESC 
-                LIMIT 1
-            ) != {new_price};
-    '''
-    """
+
     query = '''
         INSERT INTO price_of_product (product_id, price)
         VALUES (%s, %s)

@@ -20,7 +20,7 @@ from settings import SHOP_PREFIX
 '''
 TOKEN = 'y0_AgAAAAA13VXGAAvz6QAAAAEHf7cVAAAB69pht3BEXrh32mlfvcdJRy7noQ'
 
-business_id = 96421931
+business_id = 96421931  # id шелеста
 
 headers = {
     'Authorization': f'Bearer {TOKEN}',
@@ -901,7 +901,7 @@ def main():
     # get_goods_from_ya('10498025')  # умные часы и браслеты
     # get_goods_from_ya('90555')  # Наушники и гарнитуры
     # get_goods_from_ya('4165204')  # ТВ приставки
-    get_goods_from_ya('2724669')  # портативная акустика
+    # get_goods_from_ya('2724669')  # портативная акустика
 
 
 if __name__ == '__main__':
