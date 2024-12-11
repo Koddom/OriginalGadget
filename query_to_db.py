@@ -861,7 +861,7 @@ def add_mac(title, full_name, line, description, sku_ya_shop: tuple = None):
 
 
 def test():
-    # установка изобрадений для товара в базе данных
+    # установка изображений для товара в базе данных
     query = '''
         INSERT INTO img_of_product (product_id, number_of_image, name_of_img)
         SELECT id, 3, 'iphone-14-starlight-3.webp'

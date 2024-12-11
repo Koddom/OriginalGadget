@@ -33,6 +33,45 @@ body {
   font-family: "WixMadeforTextSemiBold", "helveticaneuemedium";
   font-size: 16px; }
 
+#pop-up {
+    z-index: 2147483647;
+    position: fixed;
+    top: 60px;
+    right: 150px;
+    border-radius: 100px;
+    width: 60px;
+    height: 60px;
+    cursor: pointer;
+    display: none; }
+@media only screen and (max-width: 767px) {
+  #pop-up {
+    top: auto;
+    bottom: 20px;
+    left: 40px; }  }
+#pop-up img {
+    width: 60px;
+    height: 60px;
+}
+#cart-items-count {
+  background: linear-gradient(0deg, #fc8507, #ffa218);
+  border: 4px solid #f7f7f7;
+  border-radius: 50px;
+  color: #fff;
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  height: 28px;
+  line-height: 14px;
+  max-width: fit-content;
+  min-width: 28px;
+  padding: 3px;
+  position: absolute;
+  right: -8px;
+  text-align: center;
+  top: -8px;
+  z-index: 5;
+}
+
 h1,
 h2,
 h3,
@@ -292,7 +331,7 @@ img {
 #scrollUp {
   background-color: #fbb710;
   border-radius: 0;
-  bottom: 60px;
+  bottom: 80px;
   box-shadow: 0 2px 6px 0 rgba(0, 0, 0, 0.3);
   color: #ffffff;
   font-size: 24px;
@@ -307,7 +346,32 @@ img {
     background-color: #131212; }
   @media only screen and (max-width: 767px) {
     #scrollUp {
-      bottom: 30px;
+      bottom: 70px;
+      right: 30px; } }
+
+/* ScrollDown */
+#scrollDown {
+  background-color: #fbb710;
+  border-radius: 0;
+  bottom: 30px;
+  box-shadow: 4px 4px 6px 0 rgba(0, 0, 0, 0.3);
+  color: #ffffff;
+  font-size: 24px;
+  height: 40px;
+  line-height: 40px;
+  right: 60px;
+  text-align: center;
+  width: 40px;
+  position: fixed;
+  z-index: 2147483647;
+  display: none;
+  -webkit-transition-duration: 500ms;
+  transition-duration: 500ms; }
+  #scrollDown:hover {
+    background-color: #131212; }
+  @media only screen and (max-width: 767px) {
+    #scrollDown {
+      bottom: 20px;
       right: 30px; } }
 
 /* Essence Button */
@@ -673,6 +737,21 @@ img {
           flex: 0 0 25%;
           width: 25%;
           max-width: 25%; }
+        .main-content-wrapper .cart-table-area .delete_button {
+          transition: background-color 0.7s, border-radius 0.6s;
+          align-content: center;
+          text-align: center;
+        }
+        .main-content-wrapper .cart-table-area .delete_button img {
+          height: 20px;
+        }
+        .main-content-wrapper .cart-table-area .delete_button a {
+          font-size: 16px;
+        }
+        .main-content-wrapper .cart-table-area .delete_button:hover {
+          background-color: rgba(238, 12, 12, 0.8);
+          border-radius: 50px;
+        }
           .main-content-wrapper .cart-table-area table tbody tr td h5 {
             font-size: 16px;
             color: #252525; }
@@ -880,7 +959,7 @@ img {
         color: #6b6b6b;
         font-size: 14px; }
       .main-content-wrapper .single-product-area .single_product_desc .product-meta-data .avaibility {
-        margin-bottom: 0;
+        margin-bottom: 5px;
         font-size: 12px;
         color: #6b6b6b;
         line-height: 1; }
@@ -1118,7 +1197,13 @@ img {
       font-size: 10px;
       color: #fbb710; }
     .single-product-wrapper .product-description .ratings-cart .cart {
-      display: block; }
+      display: block;
+      cursor: pointer;
+      height: 29px;
+      width: 32px;
+      position: relative;
+      right: 10px;
+      }
   .single-product-wrapper:hover .product-img .hover-img {
     opacity: 1;
     visibility: visible; }

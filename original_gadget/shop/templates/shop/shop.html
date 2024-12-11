@@ -21,10 +21,11 @@
 
     <!-- Подключение jQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-scrollTo/2.1.3/jquery.scrollTo.min.js"></script>
+
 </head>
 
 <body>
-
     <!-- ##### Main Content Wrapper Start ##### -->
     <div class="main-content-wrapper d-flex clearfix">
 
@@ -39,7 +40,10 @@
                 <span></span><span></span><span></span>
             </div>
         </div>
-
+        <a id="pop-up" href="{% url 'cart' %}">
+            <img src="{% static 'img/core-img/shopping-cart.png' %}" alt="Перейти в корзину">
+            <div id="cart-items-count">{{ cart|length }}</div>
+        </a>
         {% include 'header.html' %}
 
         <!-- ##### Single Widget for mobile##### -->
@@ -80,11 +84,8 @@
         <!--   Right column showcase with goods   -->
         <div class="amado_product_area section-padding-100">
             <div class="container-fluid">
-
                 <!--Showing and sorting-->
-
                 <div class="row">
-
                     {% for product in list_of_products %}
                         <!-- Single Product Area -->
                         <div class="col-12 col-sm-6 col-md-12 col-xl-6">
@@ -129,7 +130,6 @@
 
 
                 </div>
-
                 <div class="row">
                     <div class="col-12">
                         <!-- Pagination -->
@@ -141,14 +141,13 @@
         <!--   end Right column showcase with goods   -->
     </div>
     <!-- ##### Main Content Wrapper End ##### -->
+    
     {% include 'footer.html' %}
 <script>
     // скрипт добавления товара без обновления страницы
-
     $(document).ready(function() {
     $('.add-to-cart-btn').click(function() {
         var productId = $(this).data('product-id');
-
         // AJAX запрос для добавления товара в корзину
         $.ajax({
             url: '{% url "cart:cart_add" %}',
@@ -159,7 +158,8 @@
             },
             success: function(response) {
                 $('#cart-count').text('(' + response.cart_quantity + ')');
-                alert('Товар добавлен в корзину!');
+                $('#cart-items-count').text(response.cart_quantity);
+                $('#pop-up').fadeIn();
             },
             error: function(response) {
                 alert('Ошибка добавления товара в корзину.');

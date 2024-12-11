@@ -95,8 +95,8 @@
                                         <td class="price">
                                             <span>{{ product.price }} ₽</span>
                                         </td>
-                                        <td>
-                                            <a href="{% url 'cart:remove_from_cart' product_id=product.id %}"> Delete </a>
+                                        <td class="delete_button">
+                                            <a href="{% url 'cart:remove_from_cart' product_id=product.id %}"><img src="{% static 'img/core-img/trash-can.png' %}"> Delete </a>
                                         </td>
 
                                     </tr>
@@ -127,8 +127,6 @@
         </div>
     </div>
     <!-- ##### Main Content Wrapper End ##### -->
-
-    {% include 'newsletter.html' %}
 
     {% include 'footer.html' %}
 
