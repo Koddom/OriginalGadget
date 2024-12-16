@@ -1,6 +1,8 @@
 import mysql.connector
 from mysql.connector import Error
 from django.utils.text import slugify
+import csv
+
 from settings import connection_config_to_db
 from settings import DB_NAME
 
@@ -692,6 +694,38 @@ def update_price(product_id, new_price):
         print(e)
 
 
+def update_description(product_id, description):
+    cur = CursorDB()
+
+    query = '''
+            INSERT INTO description_of_product (product_id, description)
+            VALUES (%s, %s)
+            ON DUPLICATE KEY UPDATE description = VALUES(description);
+        '''
+    data = (product_id, description)
+    try:
+        cur.cursor.execute(query, data)
+    except Error as e:
+        print(e)
+
+
+def update_image(product_id, name_of_img, number_of_image):
+    cur = CursorDB()
+
+    query = '''
+                INSERT INTO img_of_product (product_id, number_of_image, name_of_img)
+                VALUES (%s, %s, %s)
+                ON DUPLICATE KEY UPDATE 
+                    number_of_image = VALUES(number_of_image),
+                    name_of_img = VALUES(name_of_img);
+            '''
+    data = (product_id, name_of_img, number_of_image)
+    try:
+        cur.cursor.execute(query, data)
+    except Error as e:
+        print(e)
+
+
 # Функции добавления объектов в БД
 def add_iphone(title, full_name, line, memory, sim, colors: tuple, diagonal, description, sku_ya_shop: tuple = None):
     """
@@ -858,6 +892,57 @@ def add_mac(title, full_name, line, description, sku_ya_shop: tuple = None):
             print(e)
 
     return product_id
+
+
+# Функции для работы с телеграм ботом
+def create_file_with_cost(category, only_available=False):
+    query1 = '''
+        CREATE TEMPORARY TABLE lines_in_one_category AS
+        SELECT
+            line
+        FROM product_line
+        WHERE category = %s;
+    '''
+
+    query2 = '''
+        SELECT
+            lines_in_one_category.line,
+            product_in_line.product_id,
+            product.title,
+            price_of_product.price,
+            product.is_available
+        FROM lines_in_one_category
+        LEFT JOIN product_in_line
+        ON lines_in_one_category.line = product_in_line.line
+        LEFT JOIN product
+        ON product_in_line.product_id = product.id
+        LEFT JOIN price_of_product
+        ON product_in_line.product_id = price_of_product.product_id
+        WHERE product_in_line.product_id IS NOT NULL;
+    '''
+    if only_available:
+        query2 = query2.replace(';', ' AND product.is_available = 1;')
+    cur = CursorDB()
+    try:
+        data = (category, )
+        cur.cursor.execute(query1, data)
+        cur.cursor.execute(query2)
+    except Error as e:
+        print(e)
+        return
+
+    # Открываем CSV-файл для записи
+    file_name = f"{category}.csv"
+    with open(file_name, mode="w", newline="") as file:
+        writer = csv.writer(file, delimiter=';')
+
+        # Записываем заголовки (имена столбцов)
+        writer.writerow([i[0] for i in cur.cursor.description])
+
+        # Записываем данные
+        writer.writerows(cur.cursor.fetchall())
+
+    return file_name
 
 
 def test():
