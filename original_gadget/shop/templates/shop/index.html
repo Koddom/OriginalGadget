@@ -16,8 +16,8 @@
     <link rel="icon" href="{% static 'img/core-img/favicon.ico' %}" type="image/x-icon">
 
     <!-- Core Style CSS -->
-    <link rel="stylesheet" href="{% static 'shop/css/core-style.css' %}">
-    <link rel="stylesheet" href="{% static 'shop/style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'shop/css/core-style.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'shop/style.css' %}">
 
 </head>
 
@@ -33,7 +33,10 @@
         <div class="mobile-nav">
             <!-- Navbar Brand -->
             <div class="amado-navbar-brand">
-                <a href="{% url 'index' %}"><img src="{% static 'img/core-img/logo.png' %}" alt="Original Gadget logo"></a>
+                <a href="{% url 'index' %}">
+                    <img src="{% static 'img/core-img/logo.png' %}" alt="Original Gadget logo">
+                    <img src="{% static 'img/core-img/hat.png' %}" alt="Christmas Hat" class="mobile_hat">
+                </a>
             </div>
             <!-- Navbar Toggler -->
             <div class="amado-navbar-toggler">
@@ -170,7 +173,7 @@
     <!-- ##### Main Content Wrapper End ##### -->
 
     {% include 'footer.html' %}
-    <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A7cc6ecb115bc1ddfa67c168a3b0e6119970e8b954133c1c251df309d09bf512e&amp;width=100%25&amp;height=500&amp;lang=ru_RU&amp;scroll=true"></script>
+<!--    <script type="text/javascript" charset="utf-8" async src="https://api-maps.yandex.ru/services/constructor/1.0/js/?um=constructor%3A7cc6ecb115bc1ddfa67c168a3b0e6119970e8b954133c1c251df309d09bf512e&amp;width=100%25&amp;height=500&amp;lang=ru_RU&amp;scroll=true"></script>-->
 
 </body>
 

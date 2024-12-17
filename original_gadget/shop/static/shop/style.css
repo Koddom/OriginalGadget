@@ -1,43 +1,74 @@
-    /* ####################################################
-    :: Template Name: Essence - Fashion Ecommerce Template
-    :: Author: Colorlib
-    :: Author URL: https://colorlib.com
-    :: Description: Essence is smart & elegant fashion e-commerce Template. It's suitable for all e-commerce business platform.
-    :: Version: 1.0.0
-    :: Created: April 27, 2018
-    :: Last Updated: May 2, 2018
-    #################################################### */
+/* ####################################################
+:: Template Name: Essence - Fashion Ecommerce Template
+:: Author: Colorlib
+:: Author URL: https://colorlib.com
+:: Description: Essence is smart & elegant fashion e-commerce Template. It's suitable for all e-commerce business platform.
+:: Version: 1.0.0
+:: Created: April 27, 2018
+:: Last Updated: May 2, 2018
+#################################################### */
 
-    /* ---------------------------------------
-    ##### - PLACE YOUR CUSTOM CSS HERE - #####
-    --------------------------------------- */
+/* ---------------------------------------
+##### - PLACE YOUR CUSTOM CSS HERE - #####
+--------------------------------------- */
 
-    h6 {
-        color: #131212;
-        font-size: 20px;
-        font-weight: 400;
-    }
+h6 {
+    color: #131212;
+    font-size: 20px;
+    font-weight: 400;
+}
 
-    .phone-or-telegram{
-        margin-bottom: 50px;pwd
-    }
+.phone-or-telegram{
+    margin-bottom: 50px;pwd
+}
 
-    /* Блок с категориями вверху на мобильной версии */
+/* Блок с категориями вверху на мобильной версии */
+.smart2 {
+    display: none;
+    width: 100%;
+    max-width: 100%;
+    background-color: #f5f7fa;
+    padding: 100px 40px;
+    position: relative;
+}
+
+@media only screen and (max-width: 767px) {
     .smart2 {
-        display: none;
-        width: 100%;
-        max-width: 100%;
-        background-color: #f5f7fa;
-        padding: 100px 40px;
-        position: relative;
+    display: block;
+}}
+
+
+.add-to-cart-btn{
+    width: 35px;
+}
+
+
+/* Новогодняя шапка */
+.hat {
+    position: absolute; /* Абсолютное позиционирование относительно родителя */
+    top: 30px; /* Смещение шапки вверх относительно логотипа */
+    left: 40%; /* Позиционирование по горизонтали от центра */
+    transform: translateX(-50%); /* Центрируем шапку горизонтально */
+    width: 70px; /* Ширина шапки относительно логотипа */
+    height: auto; /* Сохраняем пропорции шапки */
+    pointer-events: none; /* Чтобы шапка не мешала кликам по логотипу */
+}
+
+@media only screen and (min-width: 768px) and (max-width: 991px) {
+    .hat {
+        top: 20px;
+        left: 36%;
     }
+}
 
-    @media only screen and (max-width: 767px) {
-        .smart2 {
-        display: block;
-    }}
-
-
-    .add-to-cart-btn{
-        width: 35px;
+@media only screen and (max-width: 767px) {
+    .mobile_hat {
+        position: absolute;
+        top: 3px;
+        left: 60px;
+        width: 40px;
+        transform: translateX(-50%);
+        height: auto;
+        pointer-events: none;
     }
+}
